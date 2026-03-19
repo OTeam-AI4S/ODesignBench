@@ -1,0 +1,17 @@
+name: protein_metrics
+cuda_device: 1  # Changed from 0 to avoid CUDA device busy error
+verbose: true
+
+# Protein-specific parameters
+sequence_type: protein
+evaluation_method: structure_analysis
+confidence_threshold: 0.7
+num_workers: 16
+
+# FoldSeek configuration
+foldseek_bin: ${oc.env:FOLDSEEK_BIN,tools/foldseek/bin/foldseek}
+foldseek_database: ${oc.env:FOLDSEEK_DATABASE,tools/foldseek/databases/pdb}
+
+# Output settings
+save_pdb: true
+save_confidence_scores: true

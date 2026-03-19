@@ -1,0 +1,4 @@
+>ligand|name=HAX
+CC(C)(COP(=O)(O)OP(=O)(O)OCC1OC(n2cnc3c(N)ncnc32)C(O)C1OP(=O)(O)O)C(O)C(=O)NCCC(=O)NCCCC(=O)NO
+>ligand|name=OAA
+O=C([O-])CC(=O)C(=O)O

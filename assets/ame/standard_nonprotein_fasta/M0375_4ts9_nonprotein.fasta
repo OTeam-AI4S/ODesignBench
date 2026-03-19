@@ -1,0 +1,4 @@
+>ligand|name=FMC
+Nc1ncnc2c([C@@H]3O[C@H](CO)[C@@H](O)[C@H]3O)n[nH]c12
+>ligand|name=PO4
+O=P([O-])([O-])[O-]

@@ -1,0 +1,4 @@
+>ligand|name=COA
+CC(C)(COP(=O)(O)OP(=O)(O)OCC1OC(n2cnc3c(N)ncnc32)C(O)C1OP(=O)(O)O)C(O)C(=O)NCCC(=O)NCCS
+>ligand|name=NAP
+NC(=O)c1ccc[n+]([C@@H]2O[C@H](COP(=O)([O-])O[P@](=O)(O)OC[C@H]3O[C@@H](n4cnc5c(N)ncnc54)[C@H](OP(=O)(O)O)[C@@H]3O)[C@@H](O)[C@H]2O)c1

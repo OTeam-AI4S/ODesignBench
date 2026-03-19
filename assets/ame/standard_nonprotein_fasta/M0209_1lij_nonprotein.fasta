@@ -1,0 +1,6 @@
+>ligand|name=ACP
+Nc1ncnc2c1ncn2C1OC(COP(=O)(O)OP(=O)(O)CP(=O)(O)O)C(O)C1O
+>ligand|name=MG
+[Mg+2]
+>ligand|name=RPP
+Nc1ncnc2c1C(I)NN2C1OC(CO)C(O)C1O

@@ -1,0 +1,6 @@
+# AME-specific chai1 refold configuration
+# Note: AME tasks do not require ccd_component as nonprotein sequences
+# are read from standard_nonprotein_fasta directory
+num_workers: 8  # Increased for multi-GPU setups (can be adjusted based on GPU count)
+num_diffn_samples: 1
+batch_size: 1

@@ -1,0 +1,24 @@
+defaults:
+  - _self_
+  - motif_scaffolding: motif_scaffolding
+  - inversefold: ProteinMPNN
+  - refold: esmfold
+
+# Model name (required for Generator selection)
+# Available: PPIFlow, RFD3
+model_name: PPIFlow
+
+# Design directory containing scaffold outputs
+design_dir: /path/to/design/outputs
+
+# Pipeline root directory
+root: results
+
+# GPUs to use
+gpus: 0
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: ${root}/hydra

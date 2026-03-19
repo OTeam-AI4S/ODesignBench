@@ -1,0 +1,33 @@
+defaults:
+  - refold: chai_ame
+  - inversefold: LigandMPNN
+  - metrics: protein_binding_protein
+
+# Folder containing backbone PDBs (enzyme–ligand complexes) to evaluate.
+design_dir: null
+
+root: results
+gpus: 0  # Can be set to "2,3" or [2,3] for multi-GPU (e.g., gpus: 2,3)
+
+ame:
+  # Pocket cutoff (Å) for pocket-aligned ligand RMSD metric.
+  pocket_cutoff: 6.0
+  
+  # Pipeline steps to run. Set to false to skip a step.
+  # Steps will be skipped if output already exists (unless force=true).
+  steps:
+    preprocess: true      # Step 1: Preprocess PDB inputs
+    inversefold: true     # Step 2: InverseFold (LigandMPNN)
+    make_fasta: true     # Step 3: Make chai1 input FASTA files
+    refold: true         # Step 4: Run chai-1 refolding
+    evaluation: true     # Step 5: Evaluate results
+  
+  # Force re-run even if output exists (for all steps)
+  force: false
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: ${root}/hydra
+

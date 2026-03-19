@@ -1,0 +1,5 @@
+name: esmfold
+num_workers: 8
+# Override via ESMFOLD_MODEL_DIR or refold.esmfold_model_dir=
+esmfold_model_dir: ${oc.env:ESMFOLD_MODEL_DIR,refold/esmfold/weights}
+master_port: 29500

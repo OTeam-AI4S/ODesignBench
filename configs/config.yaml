@@ -1,0 +1,14 @@
+defaults:
+  - refold: alphafold3
+  - inversefold: LigandMPNN
+  - metrics: protein_binding_protein
+
+design_dir: ${oc.env:DESIGN_DIR,examples/ODesign/protein_binding_protein}
+root: results
+gpus: 2,3,4,5,6,7
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: ${root}/hydra

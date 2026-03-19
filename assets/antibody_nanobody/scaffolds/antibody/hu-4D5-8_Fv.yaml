@@ -1,0 +1,35 @@
+# hu-4D5-8_Fv.pdb - Part 1 Fixed Scaffold for Antibody (scFv/Fab)
+# Scaffold ID: 1FVC
+# This is the standard scaffold for Part 1 benchmark targets (01-11, 21, 22)
+
+path: hu-4D5-8_Fv.pdb
+
+chains:
+  - id: H
+    type: heavy
+    cdr_regions:
+      cdr1:
+        start: 26
+        end: 33
+      cdr2:
+        start: 51
+        end: 58
+      cdr3:
+        start: 97
+        end: 105
+  - id: L
+    type: light
+    cdr_regions:
+      cdr1:
+        start: 143
+        end: 148
+      cdr2:
+        start: 166
+        end: 168
+      cdr3:
+        start: 205
+        end: 213
+
+scaffold_id: 1FVC
+scaffold_name: hu4D5-8
+description: Part 1 fixed scaffold for antibody design benchmark

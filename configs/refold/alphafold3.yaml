@@ -1,0 +1,11 @@
+name: alphafold3
+# AF3 run script (override at runtime: refold.af3_exec=/path/to/run_af3.sh)
+af3_exec: ${oc.env:AF3_EXEC,refold/run_af3.sh}
+# false = no MSA search (faster). true = full data pipeline
+run_data_pipeline: false
+exp_name: test
+num_workers: 8
+cache_dir: 
+unpaired_msa_cache: 
+paired_msa_cache: 
+template_cache: 

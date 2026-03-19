@@ -1,0 +1,7 @@
+name: ligand_metrics
+babel_libdir: ${oc.env:BABEL_LIBDIR,}
+cuda_device: 1  # Changed from 0 to avoid CUDA device busy error
+verbose: true
+ccd_bond_length_path: evaluation/metrics/ligand/geometry/ccd_bond_length_distribution.npy
+ccd_bond_angle_path: evaluation/metrics/ligand/geometry/ccd_bond_angle_distribution.npy
+ccd_torsion_angle_path: evaluation/metrics/ligand/geometry/ccd_torsion_angle_distribution.npy

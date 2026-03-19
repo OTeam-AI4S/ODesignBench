@@ -1,0 +1,3560 @@
+[
+  {
+    "name": "M0129_1os7",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0129_1os7.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "97-97,[A1-1],1-1,[B1-1],153-153,[C1-1],14-14,[D1-1],12-12",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-3]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "Z": [
+          1,
+          2,
+          3
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0636_1uaq",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0636_1uaq.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "56-56,[A1-1],24-24,[B1-1],1-1,[C1-1],67-67",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "OG"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "SG"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-2]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "Z": [
+          1,
+          2
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0552_1fgh",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0552_1fgh.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "98-98,[A1-2],63-63,[B1-1],281-281,[C1-1],194-194,[D1-1],1-1,[E1-1],110-110",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "A2": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "OG"
+          ],
+          "E1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1,
+          2
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "E": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0904_1qgx",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0904_1qgx.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "47-47,[A1-1],22-22,[B1-1],69-69,[C1-1],1-1,[D1-2],1-1,[E1-1],146-146,[F1-1],61-61",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CD1",
+            "CG1",
+            "CG2",
+            "N",
+            "O"
+          ],
+          "D2": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "E1": [
+            "C",
+            "CA",
+            "CB",
+            "CG2",
+            "N",
+            "O",
+            "OG1"
+          ],
+          "F1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-2]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1,
+          2
+        ],
+        "E": [
+          1
+        ],
+        "F": [
+          1
+        ],
+        "Z": [
+          1,
+          2
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0663_1rk2",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0663_1rk2.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "248-248,[A1-4],53-53",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O"
+          ],
+          "A2": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O"
+          ],
+          "A3": [
+            "C",
+            "CA",
+            "N",
+            "O"
+          ],
+          "A4": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0188_1xel",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0188_1xel.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "123-123,[A1-1],24-24,[B1-1],3-3,[C1-1],185-185",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "OG"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD1",
+            "CD2",
+            "CE1",
+            "CE2",
+            "CG",
+            "CZ",
+            "N",
+            "O",
+            "OH"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0555_1f8r",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0555_1f8r.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "219-219,[A1-1],102-102,[B1-1],160-160",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0500_1e3i",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0500_1e3i.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "45-45,[A1-3],18-18,[B1-1],110-110,[C1-1],3-3,[D1-1],194-194",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "SG"
+          ],
+          "A2": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O"
+          ],
+          "A3": [
+            "C",
+            "CA",
+            "CB",
+            "CG2",
+            "N",
+            "O",
+            "OG1"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "SG"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "OG"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-2]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1,
+          2,
+          3
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "Z": [
+          1,
+          2
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0209_1lij",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0209_1lij.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "125-125,[A1-1],101-101,13-13,49-49,[B1-1],40-40",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-3]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "Z": [
+          1,
+          2,
+          3
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0349_1e3v",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0349_1e3v.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "14-14,[A1-1],23-23,[B1-1],59-59,[C1-1],2-2,[D1-1],26-26",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD1",
+            "CD2",
+            "CE1",
+            "CE2",
+            "CG",
+            "CZ",
+            "H",
+            "HH",
+            "N",
+            "O",
+            "OH"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "H",
+            "HD2",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "H",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "H",
+            "HD2",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0870_1oh9",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0870_1oh9.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "7-7,[A1-1],2-2,[B1-1],33-33,[C1-1],116-116,[D1-1],54-54,[E1-1],41-41",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "N",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "N",
+            "O"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "E1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-2]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "E": [
+          1
+        ],
+        "Z": [
+          1,
+          2
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0151_1q0n",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0151_1q0n.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "81-81,[A1-1],9-9,[B1-1],2-2,[C1-1],1-1,[D1-1],61-61",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-3]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "Z": [
+          1,
+          2,
+          3
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0907_1rbl",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0907_1rbl.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "166-166,[A1-1],25-25,[B1-1],1-1,[C1-2],89-89,[D1-1],39-39,[E1-1],141-141",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "C2": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "E1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1,
+          2
+        ],
+        "D": [
+          1
+        ],
+        "E": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0054_1qfe",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0054_1qfe.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "85-85,[A1-1],56-56,[B1-1],26-26,[C1-1],82-82",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0255_1mg5",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0255_1mg5.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "107-107,[A1-1],30-30,[B1-1],12-12,[C1-1],3-3,[D1-1],99-99",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "ND2",
+            "O",
+            "OD1"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "OG"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD1",
+            "CD2",
+            "CE1",
+            "CE2",
+            "CG",
+            "CZ",
+            "N",
+            "O",
+            "OH"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-2]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "Z": [
+          1,
+          2
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0731_1mt5",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0731_1mt5.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "105-105,[A1-1],74-74,[B1-2],19-19,[C1-4],332-332",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "OG"
+          ],
+          "B2": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "OG"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD1",
+            "CG1",
+            "CG2",
+            "N",
+            "O"
+          ],
+          "C2": [
+            "C",
+            "CA",
+            "N",
+            "O"
+          ],
+          "C3": [
+            "C",
+            "CA",
+            "N",
+            "O"
+          ],
+          "C4": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "OG"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1,
+          2
+        ],
+        "C": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0157_1qh5",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0157_1qh5.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "53-53,[A1-1],1-1,[B1-1],1-1,[C1-2],50-50,[D1-1],23-23,[E1-1],38-38,[F1-1],87-87",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "C2": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "E1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "F1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-2]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1,
+          2
+        ],
+        "D": [
+          1
+        ],
+        "E": [
+          1
+        ],
+        "F": [
+          1
+        ],
+        "Z": [
+          1,
+          2
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0040_13pk",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0040_13pk.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "34-34,[A1-1],179-179,[B1-1],156-156,[C1-1],22-22,[D1-1],20-20",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "N",
+            "O"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "N",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0315_1ey3",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0315_1ey3.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "65-65,[A1-1],42-42,[B1-1],2-2,[C1-1],19-19,[D1-1],126-126",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "N",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0711_2esd",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0711_2esd.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "152-152,[A1-1],95-95,[B1-1],33-33,[C1-1],191-191",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "ND2",
+            "O",
+            "OD1"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "SG"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-2]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "Z": [
+          1,
+          2
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0179_1q3s",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0179_1q3s.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "54-54,[A1-1],32-32,[B1-2],294-294,[C1-1],133-133",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CG2",
+            "N",
+            "O",
+            "OG1"
+          ],
+          "B2": [
+            "C",
+            "CA",
+            "CB",
+            "CG2",
+            "N",
+            "O",
+            "OG1"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1,
+          2
+        ],
+        "C": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0096_1chm",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0096_1chm.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "230-230,[A1-1],29-29,[B1-1],95-95,[C1-1],44-44",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0375_4ts9",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0375_4ts9.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "19-19,[A1-1],3-3,[B1-1],62-62,[C1-1],2-2,[D1-1],113-113,[E1-1],12-12,[F1-1],20-20",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "N",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "OG"
+          ],
+          "E1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "F1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "42-42,[G1-1],194-194",
+        "fixed_atom": {
+          "G1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "C",
+        "sequence": "[Z1-2]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "E": [
+          1
+        ],
+        "F": [
+          1
+        ],
+        "G": [
+          1
+        ],
+        "Z": [
+          1,
+          2
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0110_1c0p",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0110_1c0p.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "55-55,[A1-1],280-280,[B1-1],3-3,[C1-1],22-22",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "ND2",
+            "O",
+            "OD1"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "OG"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "NE2",
+            "O",
+            "OE1"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0630_1j79",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0630_1j79.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "98-98,147-147,[A1-1],96-96",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-2]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "Z": [
+          1,
+          2
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0024_1nzy",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0024_1nzy.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "63-63,[A1-1],21-21,[B1-1],3-3,[C1-1],23-23,[D1-1],22-22,[E1-1],7-7,[F1-1],124-124",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD1",
+            "CD2",
+            "CE1",
+            "CE2",
+            "CG",
+            "CZ",
+            "N",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "N",
+            "O"
+          ],
+          "E1": [
+            "C",
+            "CA",
+            "CB",
+            "CD1",
+            "CD2",
+            "CE2",
+            "CE3",
+            "CG",
+            "CH2",
+            "CZ2",
+            "CZ3",
+            "N",
+            "NE1",
+            "O"
+          ],
+          "F1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "E": [
+          1
+        ],
+        "F": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0739_1knp",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0739_1knp.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "285-285,[A1-1],60-60,[B1-1],34-34,[C1-1],147-147",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD1",
+            "CD2",
+            "CG",
+            "N",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0078_1al6",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0078_1al6.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "241-241,[A1-1],29-29,[B1-1],45-45,[C1-1],8-8,[D1-1],45-45,[E1-1],62-62",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "OG"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ],
+          "E1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-2]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "E": [
+          1
+        ],
+        "Z": [
+          1,
+          2
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0097_1ctt",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0097_1ctt.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "101-101,[A1-1],1-1,[B1-1],24-24,[C1-1],2-2,[D1-1],162-162",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "SG"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "SG"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0584_1ldm",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0584_1ldm.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "105-105,[A1-1],59-59,[B1-1],2-2,[C1-1],23-23,[D1-1],136-136",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0674_1uf7",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0674_1uf7.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "45-45,[A1-1],79-79,[B1-1],44-44,[C1-1],132-132",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0050_1dbt",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0050_1dbt.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "32-32,[A1-1],26-26,[B1-1],1-1,[C1-1],60-60,[D1-1],91-91,[E1-1],22-22",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CG2",
+            "N",
+            "O",
+            "OG1"
+          ],
+          "E1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "62-62,[F1-1],171-171",
+        "fixed_atom": {
+          "F1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "C",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "E": [
+          1
+        ],
+        "F": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0092_1dli",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0092_1dli.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "117-117,[A1-1],26-26,[B1-1],58-58,[C1-1],3-3,[D1-1],51-51,[E1-1],3-3,[F1-1],138-138",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CG2",
+            "N",
+            "O",
+            "OG1"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "ND2",
+            "O",
+            "OD1"
+          ],
+          "E1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "SG"
+          ],
+          "F1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "E": [
+          1
+        ],
+        "F": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0732_1xs1",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0732_1xs1.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "123-123,[A1-1],1-1,[B1-1],11-11,[C1-1],55-55",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ]
+        }
+      },
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "110-110,[D1-1],3-3,[E1-1],78-78",
+        "fixed_atom": {
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "OG"
+          ],
+          "E1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "C",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "E": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0365_1pfk",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0365_1pfk.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "11-11,[A1-1],60-60,[B1-1],52-52,[C1-1],1-1,[D1-1],1-1,[E1-1],41-41,[F1-1],148-148",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "N",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CG2",
+            "N",
+            "O",
+            "OG1"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "E1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "F1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "E": [
+          1
+        ],
+        "F": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0093_1dqa",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0093_1dqa.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "229-229,[A1-1],75-75,[B1-1],103-103",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ]
+        }
+      },
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "97-97,[C1-1],306-306,[D1-1]",
+        "fixed_atom": {
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CD2",
+            "CE1",
+            "CG",
+            "N",
+            "ND1",
+            "NE2",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "C",
+        "sequence": "[Z1-2]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "Z": [
+          1,
+          2
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0717_1x7d",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0717_1x7d.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "53-53,[A1-1],165-165,[B1-1],112-112",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-2]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "Z": [
+          1,
+          2
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0710_1ra0",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0710_1ra0.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "152-152,[A1-1],60-60,[B1-1],209-209",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "NE2",
+            "O",
+            "OE1"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0664_2dhn",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0664_2dhn.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "21-21,[A1-1],77-77,[B1-1],21-21",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "N",
+            "O",
+            "OE1",
+            "OE2"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-1]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "Z": [
+          1
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0058_1cju",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0058_1cju.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "19-19,[A1-2],42-42,[B1-1],125-125",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "A2": [
+            "C",
+            "CA",
+            "CB",
+            "CD1",
+            "CG1",
+            "CG2",
+            "N",
+            "O"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ]
+        }
+      },
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "140-140,[C1-1],35-35,[D1-1],12-12",
+        "fixed_atom": {
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ],
+          "D1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CE",
+            "CG",
+            "N",
+            "NZ",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "C",
+        "sequence": "[Z1-2]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1,
+          2
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "D": [
+          1
+        ],
+        "Z": [
+          1,
+          2
+        ]
+      }
+    }
+  },
+  {
+    "name": "M0738_1o98",
+    "pdb": "assets/ame/mcsa_41/reference_pdbs/M0738_1o98.pdb",
+    "entities": [
+      {
+        "entity_type": "protein",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "A",
+        "sequence": "60-60,[A1-1],91-91,[B1-1],106-106,[C1-1],249-249",
+        "fixed_atom": {
+          "A1": [
+            "C",
+            "CA",
+            "CB",
+            "N",
+            "O",
+            "OG"
+          ],
+          "B1": [
+            "C",
+            "CA",
+            "CB",
+            "CG",
+            "N",
+            "O",
+            "OD1",
+            "OD2"
+          ],
+          "C1": [
+            "C",
+            "CA",
+            "CB",
+            "CD",
+            "CG",
+            "CZ",
+            "N",
+            "NE",
+            "NH1",
+            "NH2",
+            "O"
+          ]
+        }
+      },
+      {
+        "entity_type": "ligand",
+        "count": 1,
+        "sym_chain": "",
+        "fixed_chain": "B",
+        "sequence": "[Z1-2]",
+        "fixed_atom": {}
+      }
+    ],
+    "hotspot": {
+      "chain2res": {
+        "A": [
+          1
+        ],
+        "B": [
+          1
+        ],
+        "C": [
+          1
+        ],
+        "Z": [
+          1,
+          2
+        ]
+      }
+    }
+  }
+]

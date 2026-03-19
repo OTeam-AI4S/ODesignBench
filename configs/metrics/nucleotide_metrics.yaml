@@ -1,0 +1,4 @@
+num_workers: 16
+threshold:
+  rmsd: '</4.3'
+tm_thres: 0.6

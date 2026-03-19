@@ -1,0 +1,14 @@
+defaults:
+  - refold: chai
+  - inversefold: LigandMPNN
+  - metrics: protein_binding_protein
+
+design_dir: ${oc.env:DESIGN_DIR,examples/ODesign/ligand_binding_protein}
+root: results
+gpus: 6,7
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: ${root}/hydra

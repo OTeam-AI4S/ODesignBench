@@ -1,0 +1,15 @@
+defaults:
+  - refold: alphafold3
+  - inversefold: InverseFold
+  - metrics: nucleotide_metrics
+
+# design_dir: examples/ODesign/nuc/rna_bb
+design_dir: ${oc.env:DESIGN_DIR,examples/ODesign/nuc/rna_bb}
+root: results
+gpus: 2
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: ${root}/hydra

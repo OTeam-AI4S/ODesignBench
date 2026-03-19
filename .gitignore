@@ -1,0 +1,31 @@
+refold/esmfold/weights/
+refold/chai1/weights/
+inversefold/LigandMPNN/model_params/
+preprocess/ccd_component/
+
+output/
+results/
+
+# in development
+scripts/run_interface_pipeline.py
+scripts/run_lbp_pipeline.py
+scripts/run_nbl_pipeline.py
+scripts/run_nuc_pipeline.py
+scripts/run_pbl_pipeline.py
+scripts/run_pbn_pipeline.py
+scripts/run_protein_pipeline.py
+
+venv/
+.env
+__pycache__/
+*.py[cod]
+
+# local editor / OS / cache noise
+.DS_Store
+.vscode/
+.idea/
+.cursorrules
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+*.log

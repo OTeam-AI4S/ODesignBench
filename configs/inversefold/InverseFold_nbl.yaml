@@ -1,0 +1,6 @@
+data_name: ligand
+temp: 0.9
+topk: 4
+use_beam: true
+save_all: true
+model_dir: ${oc.env:INVERSEFOLD_MODEL_DIR,inversefold/InverseFold/ckpts}

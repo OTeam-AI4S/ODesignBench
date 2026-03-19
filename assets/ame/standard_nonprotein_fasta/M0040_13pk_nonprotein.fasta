@@ -1,0 +1,6 @@
+>ligand|name=3PG
+O=C(O)C(O)COP(=O)(O)O
+>ligand|name=ADP
+Nc1ncnc2c1ncn2C1OC(COP(=O)(O)OP(=O)(O)O)C(O)C1O
+>ligand|name=MG
+[Mg+2]

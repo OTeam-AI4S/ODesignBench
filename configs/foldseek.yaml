@@ -1,0 +1,2 @@
+foldseek_bin: ${oc.env:FOLDSEEK_BIN,tools/foldseek/bin/foldseek}
+foldseek_database: ${oc.env:FOLDSEEK_DATABASE,tools/foldseek/databases/pdb}

@@ -1,0 +1,8 @@
+exec: inversefold/LigandMPNN/run.py
+model_type: ligand_mpnn
+checkpoint_path: ${oc.env:LIGANDMPNN_CHECKPOINT_PATH,inversefold/LigandMPNN/model_params/ligandmpnn_v_32_010_25.pt}
+batch_size: 8
+number_of_batches: 1
+temperature: 0.1
+seed: 0
+parse_atoms_with_zero_occupancy: 1

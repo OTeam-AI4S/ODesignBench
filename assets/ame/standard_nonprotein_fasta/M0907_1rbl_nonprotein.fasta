@@ -1,0 +1,6 @@
+>ligand|name=CAP
+O=C(O)C(O)(COP(=O)(O)O)C(O)C(O)COP(=O)(O)O
+>ligand|name=FMT
+O=CO
+>ligand|name=MG
+[Mg+2]

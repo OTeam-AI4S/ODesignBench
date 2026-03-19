@@ -1,0 +1,15 @@
+defaults:
+  - refold: alphafold3
+  - inversefold: InverseFold_nbl
+  - metrics: nuc_binding_ligand
+
+design_dir: ${oc.env:DESIGN_DIR,examples/ODesign/nuc_binding_ligand}
+root: results
+gpus: 0
+# gpus: 0,1,2,3,4,5,6,7
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: ${root}/hydra

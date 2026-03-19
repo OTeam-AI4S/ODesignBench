@@ -1,0 +1,23 @@
+target_id,antigen_chains,target_hotspots,epitope_description
+01_7UXQ,"A17-132","A56,A115,A123",PD-L1 binding interface
+02_1TNF,"A12-157,C12-157","A113,C73",TNF-alpha trimer interface
+03_3MJG,"X93-280","X265,X264,X210",PDGFR-beta receptor
+04_3DI3,"B17-209","B81,B139,B192",IL-7R alpha chain interface
+05_4ZXB,"E6-155","E64,E88,E96",Insulin receptor site 1
+06_5VLI,"B505-566","B521,B545,B552",Influenza Stem (Conserved)
+07_7LVW,"D103-520","D469,D384",RSV F Protein Site I
+08_7LUC,"A54-309","A263,A175",RSV F Protein Site III
+09_4G8A,"A185-360,B333-483","A264,A265,B417,B440",TLR4/MD2 Complex
+10_6X93,"A12-109","A74,A100",IL-10 Receptor alpha
+11_4ZAM,"A27-290","A31,A278",Beta-lactamase Active Site
+12_3QKG,A,,Novel Target 1 (AMBP)
+13_1G13,A,,Novel Target 2 (GM2A)
+14_1JQD,A,,Novel Target 3 (HNMT)
+15_2PNY,A,,Novel Target 4 (IDI2)
+16_7AAH,A,,Novel Target 5 (MZB1)
+17_3APU,A,,Novel Target 6 (ORM2)
+18_2A1X,A,,Novel Target 7 (PHYH)
+19_3CH4,B,,Novel Target 8 (PMVK)
+20_1NB0,A,,Novel Target 9 (RFK)
+21_6COB,"A1400-1602","A1433,A1435,A1437,A1438,A1493",TcdB CROPs domain
+22_7WPC,"A363-511","A486,A493,A501",SARS-CoV-2 Omicron RBD

@@ -1,0 +1,15 @@
+defaults:
+  - inversefold: InverseFold_pbl
+  - metrics: protein_binding_ligand
+
+# design_dir: examples/ODesign/protein_binding_ligand/oqo
+design_dir: ${oc.env:DESIGN_DIR,examples/ODesign/protein_binding_ligand/oqo}
+root: results
+gpus: 0
+# gpus: 6,7
+
+hydra:
+  job:
+    chdir: false
+  run:
+    dir: ${root}/hydra

@@ -1,0 +1,18 @@
+# Motif Scaffolding configuration
+# Path to motif PDB files directory (optional, defaults to internal resources/motif_pdbs)
+# motif_pdbs_dir: /path/to/motif_pdbs
+
+# Python executable path for subprocesses (null = use current Python)
+python_path: null
+
+# Foldseek database path (required for novelty calculation)
+foldseek_database: ${oc.env:FOLDSEEK_DATABASE,tools/foldseek/databases/pdb}
+
+# GPU ID for evaluation (optional, use GPU if specified)
+gpu_id: null
+
+# List of motifs to evaluate (optional, evaluates all if not specified)
+motif_list: null
+
+# Limit samples per motif for quick test (e.g. 5); null = no limit
+max_samples_per_motif: null

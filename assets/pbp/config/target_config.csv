@@ -1,0 +1,12 @@
+target_id,target_chain,design_chain,design_length,description
+CD3d,B,A,63,CD3 delta
+EGFR,B,A,191,EGFR
+EGFR2,B,A,101,FGFR2 (EGFR2)
+H3,B,A,210,Influenza H3
+IL7Ra,B,A,193,IL-7 receptor alpha
+InsulinR,B,A,150,Insulin receptor
+PDGFR,B,A,187,PDGFR
+TGFb,B,A,82,TGF-beta
+Tie2,B,A,141,Tie2
+TrkA,B,A,101,TrkA
+VirB8,B,A,138,VirB8

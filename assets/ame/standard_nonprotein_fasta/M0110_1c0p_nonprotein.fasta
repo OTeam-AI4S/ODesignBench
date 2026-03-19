@@ -1,0 +1,6 @@
+>ligand|name=DAL
+CC(N)C(=O)O
+>ligand|name=FAD
+Cc1cc2nc3c(=O)[nH]c(=O)nc-3n(CC(O)C(O)C(O)COP(=O)(O)OP(=O)(O)OCC3OC(n4cnc5c(N)ncnc54)C(O)C3O)c2cc1C
+>ligand|name=PER
+[O-][O-]

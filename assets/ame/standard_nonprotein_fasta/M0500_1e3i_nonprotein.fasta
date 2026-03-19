@@ -1,0 +1,6 @@
+>ligand|name=CXF
+O=CNC1CCCCC1
+>ligand|name=NAI
+NC(=O)C1=CN([C@@H]2O[C@H](CO[P@](=O)(O)O[P@@](=O)(O)OC[C@H]3O[C@@H](n4cnc5c(N)ncnc54)[C@H](O)[C@@H]3O)[C@@H](O)[C@H]2O)C=CC1
+>ligand|name=ZN
+[Zn+2]
