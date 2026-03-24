@@ -232,6 +232,14 @@ def _plugin_protein_eval(ctx: PipelineContext) -> None:
 def _plugin_pbp_eval(ctx: PipelineContext) -> None:
     kwargs = {}
     pbp_info_csv = ctx.runtime.get("pbp_info_csv", None)
+    if not pbp_info_csv:
+        pbp_info_csv = _resolve_metadata_csv(
+            ctx,
+            cfg_key="pbp_info_csv",
+            preferred_names=["pbp_info.csv"],
+            csv_label="PBP info CSV",
+        )
+        ctx.runtime["pbp_info_csv"] = pbp_info_csv
     if pbp_info_csv:
         kwargs["pbp_info_csv"] = pbp_info_csv
     ctx.runtime["evaluation_pbp"] = ctx.evaluation_model.run(

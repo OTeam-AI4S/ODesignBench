@@ -260,6 +260,10 @@ class Confidence:
                     ptm_binder = float(chain_ptm[0]) if len(chain_ptm) > 0 else float("nan")
 
         plddt = sum(confidence['atom_plddts']) / len(confidence['atom_plddts'])
+        # AF-style confidence files may store atom pLDDT either in 0-1 or 0-100 scale.
+        # Normalize conservatively so downstream success thresholds remain meaningful.
+        if plddt > 1.5:
+            plddt = plddt / 100.0
         return plddt, ipae, min_ipae, iptm, ptm_binder, ptm_H, ptm_L
     
     @staticmethod

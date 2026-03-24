@@ -16,6 +16,7 @@ from evaluation.metrics.usalign import USalign
 from evaluation.metrics.foldseek import FoldSeek
 import json
 import glob
+import re
 from typing import Optional, Any
 
 class Evaluation():
@@ -763,20 +764,19 @@ class Evaluation():
                 cdr_df = None
 
         pbp_info_map = None
-        if pbp_info_csv is not None and os.path.exists(pbp_info_csv):
-            try:
-                from inversefold.pbp_csv_utils import load_pbp_info_csv
+        if pbp_info_csv is not None:
+            if not os.path.exists(pbp_info_csv):
+                raise FileNotFoundError(f"PBP info CSV not found: {pbp_info_csv}")
+            from inversefold.pbp_csv_utils import load_pbp_info_csv
 
-                pbp_df = load_pbp_info_csv(pbp_info_csv)
-                pbp_info_map = {}
-                for _, row in pbp_df.iterrows():
-                    key = Path(str(row["design_name"])).stem
-                    pbp_info_map[key] = {
-                        "target_chain": str(row["target_chain"]).strip(),
-                        "design_chain": str(row["design_chain"]).strip(),
-                    }
-            except Exception:
-                pbp_info_map = None
+            pbp_df = load_pbp_info_csv(pbp_info_csv)
+            pbp_info_map = {}
+            for _, row in pbp_df.iterrows():
+                key = Path(str(row["design_name"])).stem
+                pbp_info_map[key] = {
+                    "target_chain": str(row["target_chain"]).strip(),
+                    "design_chain": str(row["design_chain"]).strip(),
+                }
 
         def _parse_chain_csv(val):
             if val is None:
@@ -786,15 +786,30 @@ class Evaluation():
                 return []
             return [p.strip() for p in s.split(",") if p.strip()]
 
+        def _normalize_af3_sample_name(name: str) -> str:
+            sample_name = str(name).strip().replace("_model", "")
+            sample_name = re.sub(r"_seed-\d+_sample-\d+$", "", sample_name)
+            return sample_name
+
+        def _resolve_confidence_path(refold_path: Path, sample_name: str, suffix: str) -> str:
+            parents = [refold_path.parent]
+            if refold_path.parent.name.startswith("seed-") and refold_path.parent.parent != refold_path.parent:
+                parents.append(refold_path.parent.parent)
+            for parent in parents:
+                candidate = parent / f"{sample_name}{suffix}"
+                if candidate.exists():
+                    return str(candidate)
+            return str(parents[0] / f"{sample_name}{suffix}")
+
         def process_metrics_worker(refold_path: Path):
             try:
                 # sample_name from CIF filename (e.g. h3-5-3_model.cif -> h3-5-3), not parent dir,
                 # so timestamped folders (h3-5-3_20260301_125913) map correctly to backbone h3-5-3.pdb
-                sample_name = refold_path.stem.replace("_model", "")
+                sample_name = _normalize_af3_sample_name(refold_path.stem)
                 inverse_fold_path = os.path.join(pipeline_dir, "inverse_fold", "backbones", f"{sample_name}.pdb")
                 # trb_path = os.path.join(pipeline_dir, "formatted_designs", f"{sample_name.rsplit('-',1)[0]}.pkl")
-                summary_confidence_path = os.path.join(refold_path.parent, f"{sample_name}_summary_confidences.json")
-                confidence_path = os.path.join(refold_path.parent, f"{sample_name}_confidences.json")
+                summary_confidence_path = _resolve_confidence_path(refold_path, sample_name, "_summary_confidences.json")
+                confidence_path = _resolve_confidence_path(refold_path, sample_name, "_confidences.json")
                 
                 target_chain_id = None
                 design_chain_id = None
@@ -810,32 +825,28 @@ class Evaluation():
                             target_chain_id = info.get("target_chain")
                             design_chain_id = info.get("design_chain")
                             break
+                    if target_chain_id is None or design_chain_id is None:
+                        raise ValueError(
+                            f"No PBP chain-role metadata found for sample '{sample_name}'. "
+                            f"Tried keys: {lookup_keys}"
+                        )
 
-                # Complex RMSD should be computed on the merged A+B chains.
+                # Complex RMSD should be computed on the target+design chains.
                 try:
+                    complex_chain_ids = [
+                        c
+                        for c in [target_chain_id, design_chain_id]
+                        if c and c.lower() != "nan"
+                    ]
+                    if not complex_chain_ids:
+                        complex_chain_ids = ["A", "B"]
                     ca_rmsd_complex = RMSDCalculator.compute_protein_ca_rmsd_chain_subset(
                         pred=str(refold_path),
                         refold=inverse_fold_path,
-                        chain_ids=["A", "B"],
+                        chain_ids=complex_chain_ids,
                     )
                     if np.isnan(ca_rmsd_complex):
-                        # Fallback to chain-role metadata for non A/B complexes.
-                        complex_chain_ids = [
-                            c
-                            for c in [target_chain_id, design_chain_id]
-                            if c and c.lower() != "nan"
-                        ]
-                        if complex_chain_ids:
-                            ca_rmsd_complex = RMSDCalculator.compute_protein_ca_rmsd_chain_subset(
-                                pred=str(refold_path),
-                                refold=inverse_fold_path,
-                                chain_ids=complex_chain_ids,
-                            )
-                    if np.isnan(ca_rmsd_complex):
-                        ca_rmsd_complex = RMSDCalculator.compute_protein_ca_rmsd(
-                            pred=str(refold_path),
-                            refold=inverse_fold_path,
-                        )
+                        raise ValueError("insufficient common CA residues on target/design complex chains")
                 except Exception:
                     ca_rmsd_complex = np.inf
                     print(f"{refold_path} fail for calculate rmsd, set to inf, please check the case")
@@ -910,10 +921,13 @@ class Evaluation():
         sample_to_path: dict[str, Path] = {}
         duplicate_counts: dict[str, int] = defaultdict(int)
         for p in all_refold_paths:
-            sample_name = p.stem.replace("_model", "")
+            sample_name = _normalize_af3_sample_name(p.stem)
             if sample_name in sample_to_path:
                 duplicate_counts[sample_name] += 1
-                if p.stat().st_mtime > sample_to_path[sample_name].stat().st_mtime:
+                chosen = sample_to_path[sample_name]
+                chosen_depth = len(chosen.relative_to(Path(os.path.join(pipeline_dir, "refold", "af3_out"))).parts)
+                cand_depth = len(p.relative_to(Path(os.path.join(pipeline_dir, "refold", "af3_out"))).parts)
+                if cand_depth < chosen_depth or (cand_depth == chosen_depth and p.stat().st_mtime > chosen.stat().st_mtime):
                     sample_to_path[sample_name] = p
             else:
                 sample_to_path[sample_name] = p
