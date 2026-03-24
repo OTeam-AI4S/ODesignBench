@@ -743,10 +743,21 @@ class ReFold:
             target_ids = sorted([p.name for p in pbp_msa_root.iterdir() if p.is_dir()])
         target_ids = sorted(set(target_ids))
 
+        def read_a3m_query_sequence(a3m_path: Path) -> str:
+            with a3m_path.open("r", encoding="utf-8") as handle:
+                for line in handle:
+                    if line.startswith(">"):
+                        query = next(handle, "").strip()
+                        if query:
+                            return query
+                        break
+            raise ValueError(f"Failed to read query sequence from A3M: {a3m_path}")
+
         def infer_target_id(stem: str) -> str:
             # Most backbones contain target_id as a prefix or substring. Use longest-match.
+            stem_lower = stem.lower()
             for tid in sorted(target_ids, key=len, reverse=True):
-                if tid and (tid == stem or tid in stem):
+                if tid and (tid.lower() == stem_lower or tid.lower() in stem_lower):
                     return tid
             # Fallback: split by common delimiters.
             for sep in ["-", "_"]:
@@ -754,11 +765,42 @@ class ReFold:
                     return stem.split(sep, 1)[0]
             return stem
 
+        def validate_target_msa(single_input: dict[str, Any], target_chain_id: str, msa_path: Path, target_id: str) -> None:
+            query_sequence = read_a3m_query_sequence(msa_path).strip()
+            target_sequence = None
+            for seq in single_input.get("sequences", []):
+                protein = seq.get("protein")
+                if not protein:
+                    continue
+                chain_ids = [str(item) for item in protein.get("id", [])]
+                if str(target_chain_id) in chain_ids:
+                    target_sequence = str(protein.get("sequence", "")).strip()
+                    break
+            if target_sequence is None:
+                raise ValueError(
+                    f"Target chain '{target_chain_id}' was not found in AF3 JSON for backbone '{single_input.get('name', '')}'."
+                )
+            if query_sequence != target_sequence:
+                raise ValueError(
+                    "PBP target MSA query does not match the selected target chain sequence: "
+                    f"backbone='{single_input.get('name', '')}', target_id='{target_id}', target_chain='{target_chain_id}', "
+                    f"msa='{msa_path}', query_len={len(query_sequence)}, chain_len={len(target_sequence)}"
+                )
+
         def _build_one(backbone_path: Path) -> dict[str, Any]:
             pbp_info = match_pdb_to_pbp_info(backbone_path, pbp_info_df) if pbp_info_df is not None else None
+            if pbp_info_df is not None and pbp_info is None:
+                raise ValueError(
+                    f"No PBP CSV info found for backbone '{backbone_path.name}'. "
+                    "Ensure pbp_info.csv design_name matches formatted designs and backbone-derived names."
+                )
             target_chain_id = pbp_info["target_chain"] if pbp_info is not None else "B"
 
-            target_id = infer_target_id(backbone_path.stem)
+            target_id = ""
+            if pbp_info is not None:
+                target_id = str(pbp_info.get("target_id", "")).strip()
+            if not target_id:
+                target_id = infer_target_id(backbone_path.stem)
             msa_path = pbp_msa_root / target_id / "non_pairing.a3m"
             if not msa_path.exists():
                 raise FileNotFoundError(
@@ -766,7 +808,7 @@ class ReFold:
                     "Please ensure assets/pbp/msa/<target_id>/non_pairing.a3m exists."
                 )
 
-            return self.make_af3_json_from_backbone(
+            single_input = self.make_af3_json_from_backbone(
                 backbone_path,
                 self.config.refold.run_data_pipeline,
                 unpaired_msa_cache=None,
@@ -776,6 +818,8 @@ class ReFold:
                 target_chain_id=target_chain_id,
                 target_unpaired_msa_path=str(msa_path),
             )
+            validate_target_msa(single_input, target_chain_id, msa_path, target_id)
+            return single_input
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.config.refold.num_workers) as executor:
             futures = [executor.submit(_build_one, bp) for bp in backbone_path_list]

@@ -5,12 +5,16 @@ Required CSV columns:
 - design_name: Structure identifier (filename stem or filename with extension)
 - target_chain: Chain ID of the fixed target chain
 - design_chain: Chain ID of the redesigned binder chain
+
+Optional CSV columns:
+- target_id: Canonical target identifier used to resolve PBP MSA assets
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 from typing import Dict, List, Optional
+import re
 
 import pandas as pd
 from biotite.structure.io import pdb, pdbx
@@ -35,6 +39,9 @@ def load_pbp_info_csv(csv_path: str) -> pd.DataFrame:
 
     for col in REQUIRED_COLUMNS:
         df[col] = df[col].astype(str).str.strip()
+
+    if "target_id" in df.columns:
+        df["target_id"] = df["target_id"].fillna("").astype(str).str.strip()
 
     empty_rows = df[
         (df["design_name"] == "")
@@ -65,13 +72,24 @@ def match_pdb_to_pbp_info(struct_path: Path, pbp_df: pd.DataFrame) -> Optional[D
     struct_name = struct_path.name
     struct_stem = struct_path.stem
 
-    exact = pbp_df[pbp_df["design_name"] == struct_name]
-    if len(exact) == 0:
-        exact = pbp_df[pbp_df["design_name"] == struct_stem]
+    candidate_names = [struct_name, struct_stem]
+    normalized = pbp_df["design_name"].map(lambda x: Path(x).stem)
 
-    if len(exact) == 0:
-        normalized = pbp_df["design_name"].map(lambda x: Path(x).stem)
-        exact = pbp_df[normalized == struct_stem]
+    # ProteinMPNN backbones append a trailing design index, e.g.
+    # sample_name-1.pdb ... sample_name-8.pdb. Strip that suffix so refold
+    # backbones can still resolve to the original design_name row.
+    base_stem = re.sub(r"-\d+$", "", struct_stem)
+    if base_stem != struct_stem:
+        candidate_names.append(base_stem)
+
+    exact = pbp_df.iloc[0:0]
+    for candidate in candidate_names:
+        exact = pbp_df[pbp_df["design_name"] == candidate]
+        if len(exact) > 0:
+            break
+        exact = pbp_df[normalized == Path(candidate).stem]
+        if len(exact) > 0:
+            break
 
     if len(exact) == 0:
         return None
@@ -81,6 +99,7 @@ def match_pdb_to_pbp_info(struct_path: Path, pbp_df: pd.DataFrame) -> Optional[D
         "design_name": str(row["design_name"]).strip(),
         "target_chain": str(row["target_chain"]).strip(),
         "design_chain": str(row["design_chain"]).strip(),
+        "target_id": str(row.get("target_id", "")).strip(),
     }
 
 
