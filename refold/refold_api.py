@@ -853,18 +853,25 @@ class ReFold:
         def validate_target_msa(single_input: dict[str, Any], target_chain_id: str, msa_path: Path, target_id: str) -> None:
             query_sequence = read_a3m_query_sequence(msa_path).strip()
             target_sequence = None
+            dialect = single_input.get("dialect", "alphafoldserver")
+            is_server = dialect == "alphafoldserver"
             for seq in single_input.get("sequences", []):
+                # AF3 native dialect: {"protein": {"sequence": ..., "id": [...]}}
                 protein = seq.get("protein")
-                if not protein:
-                    continue
-                chain_ids = [str(item) for item in protein.get("id", [])]
-                if str(target_chain_id) in chain_ids:
-                    target_sequence = str(protein.get("sequence", "")).strip()
-                    break
-            if target_sequence is None:
-                raise ValueError(
-                    f"Target chain '{target_chain_id}' was not found in AF3 JSON for backbone '{single_input.get('name', '')}'."
-                )
+                if protein:
+                    chain_ids = [str(item) for item in protein.get("id", [])]
+                    if str(target_chain_id) in chain_ids:
+                        target_sequence = str(protein.get("sequence", "")).strip()
+                        break
+                # AF3 server dialect: {"proteinChain": {"sequence": ...}}
+                # proteinChain has no "id" field; chain ordering comes from the input PDB.
+                # Validate by checking that SOME proteinChain entry matches the MSA query.
+                protein_chain = seq.get("proteinChain")
+                if protein_chain and is_server:
+                    candidate = str(protein_chain.get("sequence", "")).strip()
+                    if candidate == query_sequence:
+                        target_sequence = candidate
+                        break
             if query_sequence != target_sequence:
                 raise ValueError(
                     "PBP target MSA query does not match the selected target chain sequence: "
@@ -893,6 +900,10 @@ class ReFold:
                     f"Missing PBP target MSA for target_id='{target_id}': {msa_path}. "
                     "Please ensure assets/pbp/msa/<target_id>/non_pairing.a3m exists."
                 )
+            # Inside the AF3 Docker container, /assets is mounted from AF3_ASSETS (the repo's assets/).
+            # Keep the host path for reading; pass container path to AF3 JSON.
+            host_msa_path = msa_path
+            container_msa_path = f"/assets/pbp/msa/{target_id}/non_pairing.a3m"
 
             single_input = self.make_af3_json_from_backbone(
                 backbone_path,
@@ -903,9 +914,9 @@ class ReFold:
                 use_backbone_as_template=use_backbone_as_template,
                 dialect=dialect,
                 target_chain_id=target_chain_id,
-                target_unpaired_msa_path=str(msa_path),
+                target_unpaired_msa_path=container_msa_path,
             )
-            validate_target_msa(single_input, target_chain_id, msa_path, target_id)
+            validate_target_msa(single_input, target_chain_id, host_msa_path, target_id)
             return single_input
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=self.config.refold.num_workers) as executor:
