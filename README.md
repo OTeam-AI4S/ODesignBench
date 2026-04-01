@@ -166,7 +166,9 @@ python3 scripts/run_ame_pipeline.py design_dir=examples/tip_atom_scaffolding/ gp
 
 ## AlphaFold3 Setup
 
-Some benchmark tasks use `refold=af3` which runs AlphaFold3 inside the Docker wrapper `refold/run_af3.sh`.
+Some benchmark tasks use `refold=af3` and run AlphaFold3 through a wrapper script.
+Default wrapper: `refold/run_af3.sh` (Docker).
+HPC wrapper: `refold/run_af3_singularity.sh` (Singularity/Apptainer).
 
 ### Download required artifacts
 
@@ -179,7 +181,7 @@ Follow the official AlphaFold3 instructions in the upstream repo to download:
 
 The wrapper expects:
 
-- `$AF3_BASE/model` -> mounted to `/root/models` inside the container
+- `$AF3_BASE/models` -> mounted to `/root/models` inside the container
 - `$AF3_PUBLIC_DB` -> mounted to `/root/public_databases` inside the container
 
 ### Configure environment variables
@@ -192,6 +194,21 @@ export AF3_PUBLIC_DB=/path/to/public_databases
 # Optional: if your docker image tag differs
 export AF3_DOCKER_IMAGE=alphafold3
 ```
+
+### Singularity/Apptainer mode
+
+Singularity/Apptainer is commonly allowed in HPC and can run containerized AF3 workloads without Docker daemon privileges.
+If your cluster does not support Docker on compute nodes, switch AF3 execution to:
+
+```bash
+export AF3_EXEC=/absolute/path/to/ODesignBench/refold/run_af3_singularity.sh
+export AF3_SIF_IMAGE=/absolute/path/to/alphafold3.sif
+export AF3_BASE=/path/to/af3              # must contain: $AF3_BASE/models
+export AF3_PUBLIC_DB=/path/to/public_databases
+```
+
+`run_af3_singularity.sh` accepts both `singularity` and `apptainer` commands.
+If your command name differs, ensure it is available in `PATH`.
 
 **Note on PBP target MSA injection:** PBP tasks inject pre-computed MSA for the target chain via a runtime patch (`AF3_DIALECT_PATCH=true`, default). The assets are expected at `/assets`. Set `AF3_DIALECT_PATCH=false` to disable the patch.
 

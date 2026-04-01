@@ -859,6 +859,9 @@ class ReFold:
         pbp_msa_root = pbp_msa_root.resolve()
         if not pbp_msa_root.exists():
             raise FileNotFoundError(f"PBP MSA root not found: {pbp_msa_root}")
+        pbp_msa_filename = str(getattr(self.config.refold, "pbp_target_msa_filename", "colafold.a3m")).strip()
+        if not pbp_msa_filename:
+            pbp_msa_filename = "colafold.a3m"
 
         # Prefer the canonical target id list from target_config.csv when available.
         target_ids: list[str] = []
@@ -942,16 +945,16 @@ class ReFold:
                 target_id = str(pbp_info.get("target_id", "")).strip()
             if not target_id:
                 target_id = infer_target_id(backbone_path.stem)
-            msa_path = pbp_msa_root / target_id / "non_pairing.a3m"
+            msa_path = pbp_msa_root / target_id / pbp_msa_filename
             if not msa_path.exists():
                 raise FileNotFoundError(
                     f"Missing PBP target MSA for target_id='{target_id}': {msa_path}. "
-                    "Please ensure assets/pbp/msa/<target_id>/non_pairing.a3m exists."
+                    f"Please ensure assets/pbp/msa/<target_id>/{pbp_msa_filename} exists."
                 )
             # Inside the AF3 Docker container, /assets is mounted from AF3_ASSETS (the repo's assets/).
             # Keep the host path for reading; pass container path to AF3 JSON.
             host_msa_path = msa_path
-            container_msa_path = f"/assets/pbp/msa/{target_id}/non_pairing.a3m"
+            container_msa_path = f"/assets/pbp/msa/{target_id}/{pbp_msa_filename}"
 
             single_input = self.make_af3_json_from_backbone(
                 backbone_path,

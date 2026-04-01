@@ -117,6 +117,22 @@ def _get_motif_chain_range(problem_id: str, chain_id: str) -> tuple[int, int]:
     )
 
 
+def _parse_motif_token_range(token: str) -> Optional[tuple[int, int]]:
+    """
+    Parse explicit motif range from tokens like 'A1-15' or 'B7'.
+    Returns (start, end) in 1-based inclusive numbering, or None if absent.
+    """
+    token = token.strip()
+    match = re.fullmatch(r"[A-Za-z](\d+)(?:-(\d+))?", token)
+    if not match:
+        return None
+    start = int(match.group(1))
+    end = int(match.group(2)) if match.group(2) else start
+    if end < start:
+        raise ValueError(f"Invalid motif range token '{token}': end < start")
+    return (start, end)
+
+
 def _extract_problem_id_from_pdb_path(pdb_path: Path) -> Optional[str]:
     """
     Extract motif problem ID from PDB path.
@@ -205,9 +221,10 @@ def calculate_fixed_residues_from_motif_placements(
     if not tokens:
         raise ValueError(f"Invalid motif_placements: '{motif_placements}'")
 
-    # Parse tokens in pairs: (scaffold_length, motif_chain) or (scaffold_length, motif_chain, scaffold_length, ...)
-    # The format is: scaffold_length/motif_chain/scaffold_length/motif_chain/...
-    scaffold_total = 0
+    # Parse tokens left-to-right with a running cursor over the designed chain.
+    # motif_placements format: scaffold/motif/scaffold/motif/.../scaffold
+    # The motif token can be "A" (chain only) or "A1-15" (explicit range).
+    cursor = 0
     motif_positions_1based: List[int] = []
     unresolved_motifs: List[tuple[int, str]] = []  # (token_index, chain_id)
     
@@ -218,7 +235,7 @@ def calculate_fixed_residues_from_motif_placements(
         if token[0].isdigit():
             # Scaffold length
             scaffold_length = _parse_scaffold_length(token)
-            scaffold_total += scaffold_length
+            cursor += scaffold_length
             i += 1
         else:
             # Motif chain identifier (e.g., "A", "B", "C")
@@ -226,18 +243,23 @@ def calculate_fixed_residues_from_motif_placements(
             
             # Look up the actual motif range from pre-defined ranges
             try:
-                motif_start, motif_end = _get_motif_chain_range(motif_problem_id, chain_id)
+                explicit_range = _parse_motif_token_range(token)
+                if explicit_range is not None:
+                    motif_start, motif_end = explicit_range
+                else:
+                    motif_start, motif_end = _get_motif_chain_range(motif_problem_id, chain_id)
                 motif_length = motif_end - motif_start + 1
                 
-                # Calculate 1-based position in the designed sequence
-                motif_seq_start = scaffold_total + motif_start
+                # Place motif by cumulative designed length, not by reference residue id.
+                motif_seq_start = cursor + 1
                 motif_positions_1based.extend(range(motif_seq_start, motif_seq_start + motif_length))
+                cursor += motif_length
                 
                 i += 1
             except ValueError:
                 # Chain not found, mark as unresolved
                 unresolved_motifs.append((i, chain_id))
-                scaffold_total += 1  # Add placeholder length
+                cursor += 1  # Add placeholder length
                 i += 1
 
     # Handle unresolved motifs if possible

@@ -773,10 +773,14 @@ class Evaluation():
             pbp_info_map = {}
             for _, row in pbp_df.iterrows():
                 key = Path(str(row["design_name"])).stem
-                pbp_info_map[key] = {
+                value = {
                     "target_chain": str(row["target_chain"]).strip(),
                     "design_chain": str(row["design_chain"]).strip(),
                 }
+                # Keep both original and lowercase keys so AF3 outputs with
+                # case-normalized filenames can resolve metadata robustly.
+                pbp_info_map[key] = value
+                pbp_info_map[key.lower()] = value
 
         def _parse_chain_csv(val):
             if val is None:
@@ -820,6 +824,10 @@ class Evaluation():
 
         complex_refold_root = Path(os.path.join(pipeline_dir, "refold", "af3_out"))
         unbound_refold_root = Path(os.path.join(pipeline_dir, "refold", "af3_unbound_out"))
+        backbones_dir = Path(pipeline_dir) / "inverse_fold" / "backbones"
+        backbone_name_map: dict[str, Path] = {
+            p.name.lower(): p for p in backbones_dir.glob("*.pdb")
+        }
         unbound_refold_map: dict[str, Path] = {}
         if unbound_refold_root.exists():
             unbound_refold_paths, unbound_duplicate_counts = _collect_latest_af3_outputs(unbound_refold_root)
@@ -840,7 +848,12 @@ class Evaluation():
                 # sample_name from CIF filename (e.g. h3-5-3_model.cif -> h3-5-3), not parent dir,
                 # so timestamped folders (h3-5-3_20260301_125913) map correctly to backbone h3-5-3.pdb
                 sample_name = _normalize_af3_sample_name(refold_path.stem)
-                inverse_fold_path = os.path.join(pipeline_dir, "inverse_fold", "backbones", f"{sample_name}.pdb")
+                matched_backbone = backbone_name_map.get(f"{sample_name}.pdb".lower())
+                inverse_fold_path = (
+                    str(matched_backbone)
+                    if matched_backbone is not None
+                    else os.path.join(pipeline_dir, "inverse_fold", "backbones", f"{sample_name}.pdb")
+                )
                 # trb_path = os.path.join(pipeline_dir, "formatted_designs", f"{sample_name.rsplit('-',1)[0]}.pkl")
                 summary_confidence_path = _resolve_confidence_path(refold_path, sample_name, "_summary_confidences.json")
                 confidence_path = _resolve_confidence_path(refold_path, sample_name, "_confidences.json")
@@ -853,7 +866,11 @@ class Evaluation():
                         base_name, tail = sample_name.rsplit("-", 1)
                         if tail.isdigit():
                             lookup_keys.append(base_name)
+                    expanded_keys = []
                     for k in lookup_keys:
+                        expanded_keys.append(k)
+                        expanded_keys.append(k.lower())
+                    for k in expanded_keys:
                         info = pbp_info_map.get(k)
                         if info is not None:
                             target_chain_id = info.get("target_chain")
@@ -862,7 +879,7 @@ class Evaluation():
                     if target_chain_id is None or design_chain_id is None:
                         raise ValueError(
                             f"No PBP chain-role metadata found for sample '{sample_name}'. "
-                            f"Tried keys: {lookup_keys}"
+                            f"Tried keys: {expanded_keys}"
                         )
 
                 # Complex RMSD should be computed on the target+design chains.

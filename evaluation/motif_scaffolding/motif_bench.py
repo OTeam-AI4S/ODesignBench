@@ -67,6 +67,23 @@ class MotifBenchEvaluator:
         
         # Create resources directory if it doesn't exist
         self.motif_pdbs_dir.mkdir(parents=True, exist_ok=True)
+
+    @staticmethod
+    def _extract_sample_num_from_name(name: str) -> Optional[int]:
+        """Extract trailing sample index from names like 11_3TQB_42 or 11_3TQB_42-7."""
+        stem = Path(str(name)).stem
+        stem = stem.rsplit("-", 1)[0]
+        if "_" not in stem:
+            return None
+        tail = stem.rsplit("_", 1)[-1]
+        return int(tail) if tail.isdigit() else None
+
+    @classmethod
+    def _pdb_sort_key(cls, path: Path) -> tuple[int, int | str]:
+        sample_num = cls._extract_sample_num_from_name(path.stem)
+        if sample_num is not None:
+            return (0, sample_num)
+        return (1, path.name)
     
     def load_inputs(
         self,
@@ -82,7 +99,7 @@ class MotifBenchEvaluator:
         if not input_dir.exists():
             raise FileNotFoundError(f"Input directory not found: {input_dir}")
 
-        pdb_files = sorted(list(input_dir.glob("*.pdb")))
+        pdb_files = sorted(list(input_dir.glob("*.pdb")), key=self._pdb_sort_key)
         if not pdb_files:
             raise ValueError(f"No PDB files found in {input_dir}")
 
@@ -94,6 +111,12 @@ class MotifBenchEvaluator:
         metadata_file = Path(metadata_file)
         if metadata_file.exists():
             metadata = pd.read_csv(metadata_file)
+            if 'sample_num' in metadata.columns:
+                metadata = metadata.copy()
+                metadata['sample_num'] = pd.to_numeric(metadata['sample_num'], errors='coerce')
+                if metadata['sample_num'].notna().all():
+                    metadata['sample_num'] = metadata['sample_num'].astype(int)
+                    metadata = metadata.sort_values('sample_num').reset_index(drop=True)
             self.logger.info(f"Loaded metadata from {metadata_file}")
             scaffold_info_path = metadata_file
         else:
@@ -395,23 +418,25 @@ class MotifBenchEvaluator:
             if chain_id and chain_id.strip()
         ]
 
-        # Calculate cumulative offset for motif positions in sample structure
+        # Walk left-to-right over the linear designed chain.
+        # Use a running cursor that accumulates both scaffold and motif lengths.
         motif_idx = 0  # Index into motif segments (for reference chain ordering)
-        sample_offset = 0  # Running total of scaffold lengths
+        sample_cursor = 0
         reference_parts = []
         sample_parts = []
 
         for seg in parsed_segments:
             if seg[0] == 'scaffold':
-                # Add scaffold length to running offset
-                sample_offset += seg[1]
+                # Add scaffold length to running cursor
+                sample_cursor += seg[1]
             else:
                 # Motif segment
                 chain, ref_start, ref_end = seg[1], seg[2], seg[3]
+                motif_len = ref_end - ref_start + 1
                 
-                # Calculate motif positions in sample structure (offset by scaffold lengths)
-                sample_start = sample_offset + ref_start
-                sample_end = sample_offset + ref_end
+                # Place motif by cumulative designed length, not by reference residue id.
+                sample_start = sample_cursor + 1
+                sample_end = sample_cursor + motif_len
                 
                 # Get reference chain from segment_order
                 ref_chain = reference_chain_order[motif_idx] if motif_idx < len(reference_chain_order) else chain
@@ -428,9 +453,67 @@ class MotifBenchEvaluator:
                 else:
                     sample_parts.append(f"{chain}{sample_start}-{sample_end}")
                 
+                sample_cursor += motif_len
                 motif_idx += 1
 
         return "/".join(reference_parts), "/".join(sample_parts)
+
+    def _get_structure_chain_ids(self, structure_path: Union[str, Path]) -> List[str]:
+        """Return chain IDs present in a PDB structure."""
+        chain_ids = []
+        with open(structure_path, "r") as handle:
+            for line in handle:
+                if line.startswith("ATOM"):
+                    chain_id = line[21].strip() or " "
+                    if chain_id not in chain_ids:
+                        chain_ids.append(chain_id)
+        return chain_ids
+
+    def _normalize_sample_contig_for_structure(
+        self,
+        sample_contig: str,
+        structure_path: Union[str, Path]
+    ) -> str:
+        """
+        Normalize sample motif contig against the actual chains present in a structure.
+
+        Some packaged benchmark inputs flatten multi-segment motifs onto a single chain
+        while `scaffold_info.csv` still labels later motif segments as chain B/C.
+        When the sample structure only contains one chain, remap missing motif-chain
+        labels onto the sole available chain so motif extraction remains aligned with
+        the residue numbering encoded in the contig.
+        """
+        available_chains = self._get_structure_chain_ids(structure_path)
+        if not sample_contig or not available_chains:
+            return sample_contig
+
+        if len(available_chains) != 1:
+            return sample_contig
+
+        fallback_chain = available_chains[0]
+        normalized_parts = []
+        changed = False
+
+        for token in str(sample_contig).split("/"):
+            token = token.strip()
+            if not token:
+                continue
+            chain_id = token[0]
+            if chain_id.isalpha() and chain_id not in available_chains:
+                normalized_parts.append(fallback_chain + token[1:])
+                changed = True
+            else:
+                normalized_parts.append(token)
+
+        normalized_contig = "/".join(normalized_parts)
+        if changed:
+            self.logger.debug(
+                "Normalized sample contig to available chain '%s': %s -> %s",
+                fallback_chain,
+                sample_contig,
+                normalized_contig,
+            )
+        return normalized_contig
     
     def calculate_metrics(
         self,
@@ -473,14 +556,33 @@ class MotifBenchEvaluator:
         
         results = []
         successful_backbones = []
-        
-        # Map design_base (backbone stem) -> (motif_info row, backbone path) for lookup
+
+        # Map design_base (backbone stem) -> (motif_info row, backbone path) for lookup.
+        # Do this by sample_num when possible because lexicographic filename ordering
+        # (e.g. *_10.pdb before *_2.pdb) otherwise misaligns backbone files with CSV rows.
         design_base_to_row_and_backbone = {}
-        for i in range(min(len(input_backbones), len(motif_info_df))):
-            design_base = Path(input_backbones[i]).stem
+        sample_num_to_row = {}
+        if 'sample_num' in motif_info_df.columns:
+            motif_info_df = motif_info_df.copy()
+            motif_info_df['sample_num'] = pd.to_numeric(
+                motif_info_df['sample_num'], errors='coerce'
+            )
+            for _, row in motif_info_df.dropna(subset=['sample_num']).iterrows():
+                sample_num_to_row[int(row['sample_num'])] = row
+
+        for i, backbone_path in enumerate(input_backbones):
+            design_base = Path(backbone_path).stem
+            row = None
+            sample_num = self._extract_sample_num_from_name(design_base)
+            if sample_num is not None:
+                row = sample_num_to_row.get(sample_num)
+            if row is None and i < len(motif_info_df):
+                row = motif_info_df.iloc[i]
+            if row is None:
+                continue
             design_base_to_row_and_backbone[design_base] = (
-                motif_info_df.iloc[i],
-                input_backbones[i]
+                row,
+                backbone_path
             )
         
         # Iterate over ALL refold structures (e.g. 5 samples x 8 seqs = 40)
@@ -504,6 +606,10 @@ class MotifBenchEvaluator:
                 reference_contig, sample_contig = self._build_reference_and_sample_motif_contigs(
                     contig=contig,
                     segment_order=row.get('segment_order', '')
+                )
+                sample_contig = self._normalize_sample_contig_for_structure(
+                    sample_contig,
+                    refold_path,
                 )
                 
                 ref_motif = self.au.motif_extract(
@@ -548,11 +654,12 @@ class MotifBenchEvaluator:
                     'motif_rmsd': motif_rmsd,
                     'sc_rmsd': sc_rmsd,
                     'success': success,
+                    'backbone_path': str(backbone_path) if backbone_path is not None else None,
                     'refold_path': str(refold_path)
                 })
                 
                 if success:
-                    successful_backbones.append(str(refold_path))
+                    successful_backbones.append(str(backbone_path))
                     
             except Exception as e:
                 import traceback
@@ -562,11 +669,10 @@ class MotifBenchEvaluator:
         
         results_df = pd.DataFrame(results)
         
-        # Calculate diversity and novelty if there are successful backbones
-        if successful_backbones:
-            self._calculate_diversity_and_novelty(
-                successful_backbones, motif_name, output_dir, results_df
-            )
+        # Always write summary artifacts, even when there are zero successful samples.
+        self._calculate_diversity_and_novelty(
+            successful_backbones, motif_name, output_dir, results_df
+        )
         
         results_df.to_csv(output_dir / "motif_metrics.csv", index=False)
         return results_df
@@ -622,10 +728,13 @@ class MotifBenchEvaluator:
         results_df: pd.DataFrame
     ):
         """Calculate diversity and novelty metrics."""
+        output_dir = Path(output_dir)
         successful_dir = output_dir / "successful_backbones"
         successful_dir.mkdir(parents=True, exist_ok=True)
+
+        unique_successful_backbones = sorted(set(successful_backbones))
         
-        for backbone_path in successful_backbones:
+        for backbone_path in unique_successful_backbones:
             shutil.copy2(backbone_path, successful_dir / Path(backbone_path).name)
             # Replace UNK with GLY for foldseek compatibility
             pdb_file = successful_dir / Path(backbone_path).name
@@ -635,17 +744,31 @@ class MotifBenchEvaluator:
             with open(pdb_file, 'w') as f:
                 f.write(content)
         
-        # Calculate diversity with alpha=5
-        foldseek_db = self.config.motif_scaffolding.foldseek_database
-        assist_protein = self.motif_pdbs_dir / f"{motif_name}.pdb"
-        
-        diversity_result = self._calculate_diversity_with_alpha5(
-            successful_dir, assist_protein, foldseek_db
-        )
+        diversity_result = {'Diversity': 0, 'Clusters': 0, 'Alpha5_Clusters': 0}
+        if unique_successful_backbones:
+            # Calculate diversity with alpha=5
+            foldseek_db = self.config.motif_scaffolding.foldseek_database
+            foldseek_bin = os.environ.get("FOLDSEEK_BIN")
+            foldseek_db_path = Path(str(foldseek_db))
+            if foldseek_db_path.is_dir():
+                candidate_prefix = foldseek_db_path / "pdb"
+                if candidate_prefix.exists() or candidate_prefix.with_suffix(".dbtype").exists():
+                    self.logger.info(
+                        f"Resolved foldseek database directory to prefix: {candidate_prefix}"
+                    )
+                    foldseek_db = str(candidate_prefix)
+                else:
+                    self.logger.warning(
+                        f"Foldseek database path is a directory without 'pdb' prefix: {foldseek_db_path}"
+                    )
+            assist_protein = self.motif_pdbs_dir / f"{motif_name}.pdb"
+            diversity_result = self._calculate_diversity_with_alpha5(
+                successful_dir, assist_protein, foldseek_db, foldseek_bin
+            )
         
         # Calculate novelty
         novelty_value = 0.0
-        success_results = results_df[results_df['success'] == True].copy()
+        success_results = results_df[results_df['success'] == True].copy() if 'success' in results_df.columns else pd.DataFrame()
         if len(success_results) > 0:
             # Prepare dataframe for novelty calculation
             # Novelty calculation expects 'backbone_path' column
@@ -663,7 +786,8 @@ class MotifBenchEvaluator:
                         input_csv=novelty_input,
                         foldseek_database_path=foldseek_db,
                         max_workers=4,
-                        cpu_threshold=75.0
+                        cpu_threshold=75.0,
+                        foldseek_path=foldseek_bin,
                     )
                     novelty_path = output_dir / "novelty_results.csv"
                     novelty_results.to_csv(novelty_path, index=False)
@@ -681,16 +805,21 @@ class MotifBenchEvaluator:
                     self.logger.warning(f"Failed to calculate novelty: {e}")
         
         # Count unique solutions (unique successful backbones)
-        num_unique_solutions = len(set(successful_backbones))
+        num_unique_solutions = int(diversity_result.get('Clusters', len(unique_successful_backbones)))
         
         # Calculate success rate
-        success_rate = len(successful_backbones) / len(results_df) if len(results_df) > 0 else 0
+        if 'backbone_path' in results_df.columns and len(results_df) > 0:
+            total_scaffolds_evaluated = int(results_df['backbone_path'].nunique())
+        else:
+            total_scaffolds_evaluated = len(results_df)
+        successful_scaffolds = len(unique_successful_backbones)
+        success_rate = successful_scaffolds / total_scaffolds_evaluated if total_scaffolds_evaluated > 0 else 0
         
         # Save summary (JSON format)
         summary = {
             'motif_name': motif_name,
-            'total_samples': len(results_df),
-            'successful_samples': len(successful_backbones),
+            'total_samples': total_scaffolds_evaluated,
+            'successful_samples': successful_scaffolds,
             'success_rate': success_rate,
             'diversity': diversity_result.get('Diversity', 0),
             'num_clusters': diversity_result.get('Clusters', 0),
@@ -710,7 +839,7 @@ class MotifBenchEvaluator:
             f.write(f"Number of Unique Solutions (unique successful backbones) | {num_unique_solutions}\n")
             f.write(f"Novelty | {novelty_value:.4f}\n")
             f.write(f"Success Rate | {success_rate * 100:.2f}\n")
-            f.write(f"Number of Scaffolds Evaluated | {len(results_df)}\n")
+            f.write(f"Number of Scaffolds Evaluated | {total_scaffolds_evaluated}\n")
         
         self.logger.info(f"Evaluation complete: {summary}")
     
@@ -718,7 +847,8 @@ class MotifBenchEvaluator:
         self,
         successful_dir: Path,
         assist_protein: Path,
-        foldseek_db: str
+        foldseek_db: str,
+        foldseek_bin: Optional[str] = None,
     ) -> Dict:
         """Calculate diversity using alpha=5 saturation curve."""
         if self.du is None:
@@ -738,7 +868,7 @@ class MotifBenchEvaluator:
                     alignment_type=1,
                     output_mode="DICT",
                     save_tmp=True,
-                    foldseek_path=None
+                    foldseek_path=foldseek_bin,
                 )
                 
                 num_clusters = result.get('Clusters', 0)
@@ -764,7 +894,7 @@ class MotifBenchEvaluator:
                 alignment_type=1,
                 output_mode="DICT",
                 save_tmp=True,
-                foldseek_path=None
+                foldseek_path=foldseek_bin,
             )
             best_result['Alpha5_Clusters'] = best_result.get('Clusters', 0)
             best_result['Alpha5_Threshold'] = 0.6

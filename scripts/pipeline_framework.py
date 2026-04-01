@@ -811,8 +811,74 @@ def _preprocess_motif_scaffolding(ctx: PipelineContext) -> None:
     ctx.runtime["preprocess"] = {"motif_count": len(motif_items)}
 
 
-def _inversefold_motif_scaffolding(ctx: PipelineContext) -> None:
+def _restore_motif_scaffolding_items(ctx: PipelineContext) -> list[dict]:
     motif_items = ctx.runtime.get("motif_items", [])
+    if motif_items:
+        return motif_items
+
+    motif_cfg = _get_cfg_value(ctx.cfg, "motif_scaffolding", {}) or {}
+    motif_list = None
+    max_samples_per_motif = None
+    if hasattr(motif_cfg, "get"):
+        motif_list = motif_cfg.get("motif_list", None)
+        max_samples_per_motif = motif_cfg.get("max_samples_per_motif", None)
+
+    design_dir = Path(ctx.design_dir)
+    pdbs_in_root = list(design_dir.glob("*.pdb"))
+    scaffold_in_root = (design_dir / "scaffold_info.csv").exists()
+
+    if pdbs_in_root and scaffold_in_root:
+        motifs_to_run = [motif_list[0]] if motif_list and len(motif_list) > 0 else [design_dir.name]
+        input_dirs = {m: design_dir for m in motifs_to_run}
+    else:
+        if motif_list:
+            motifs_to_run = [str(m) for m in motif_list]
+        else:
+            motifs_to_run = _discover_motifs(design_dir)
+        if not motifs_to_run:
+            raise RuntimeError(
+                f"No motif inputs found under design_dir={design_dir}; cannot restore motif items."
+            )
+        input_dirs = {m: design_dir / m for m in motifs_to_run}
+
+    restored_items = []
+    for motif_name in motifs_to_run:
+        source_dir = input_dirs[motif_name]
+        staged_input_dir = ctx.pipeline_dir / "motif_scaffolding_inputs" / motif_name
+        if max_samples_per_motif is not None and staged_input_dir.exists():
+            input_dir = staged_input_dir
+        else:
+            input_dir = source_dir
+
+        motif_output_dir = ctx.pipeline_dir / "motif_scaffolding" / motif_name
+        metadata_file = input_dir / "scaffold_info.csv"
+        item = {
+            "motif_name": motif_name,
+            "input_dir": str(input_dir),
+            "metadata_file": str(metadata_file) if metadata_file.exists() else None,
+            "motif_output_dir": str(motif_output_dir),
+        }
+
+        inverse_fold_dir = motif_output_dir / "inverse_fold"
+        if inverse_fold_dir.exists():
+            item["inverse_fold_dir"] = str(inverse_fold_dir)
+
+        refold_input_json = motif_output_dir / "refold" / "esmfold_inputs.json"
+        if refold_input_json.exists():
+            item["refold_input_json"] = str(refold_input_json)
+
+        refold_output_dir = motif_output_dir / "refold" / "esmfold_out"
+        if refold_output_dir.exists():
+            item["refold_output_dir"] = str(refold_output_dir)
+
+        restored_items.append(item)
+
+    ctx.runtime["motif_items"] = restored_items
+    return restored_items
+
+
+def _inversefold_motif_scaffolding(ctx: PipelineContext) -> None:
+    motif_items = _restore_motif_scaffolding_items(ctx)
     if not motif_items:
         raise RuntimeError("motif_scaffolding preprocess outputs not found; run preprocess first")
 
@@ -841,7 +907,7 @@ def _inversefold_motif_scaffolding(ctx: PipelineContext) -> None:
 
 
 def _prepare_refold_motif_scaffolding(ctx: PipelineContext) -> None:
-    motif_items = ctx.runtime.get("motif_items", [])
+    motif_items = _restore_motif_scaffolding_items(ctx)
     if not motif_items:
         raise RuntimeError("motif_scaffolding preprocess outputs not found; run preprocess first")
 
@@ -861,7 +927,7 @@ def _prepare_refold_motif_scaffolding(ctx: PipelineContext) -> None:
 
 
 def _run_refold_motif_scaffolding(ctx: PipelineContext) -> None:
-    motif_items = ctx.runtime.get("motif_items", [])
+    motif_items = _restore_motif_scaffolding_items(ctx)
     if not motif_items:
         raise RuntimeError("motif_scaffolding preprocess outputs not found; run preprocess first")
 
@@ -905,6 +971,8 @@ def _generate_motif_scaffolding_summaries(ctx: PipelineContext) -> None:
         / "motif_scaffolding"
         / "resources"
         / "test_cases.csv",
+        Path(__file__).resolve().parents[2] / "MotifBench" / "test_cases.csv",
+        Path(__file__).resolve().parents[3] / "MotifBench" / "test_cases.csv",
     ]
     for path in possible_test_cases_paths:
         if path.exists():
@@ -921,7 +989,7 @@ def _generate_motif_scaffolding_summaries(ctx: PipelineContext) -> None:
 
 
 def _plugin_motif_scaffolding_eval(ctx: PipelineContext) -> None:
-    motif_items = ctx.runtime.get("motif_items", [])
+    motif_items = _restore_motif_scaffolding_items(ctx)
     if not motif_items:
         raise RuntimeError("motif_scaffolding preprocess outputs not found; run preprocess first")
 

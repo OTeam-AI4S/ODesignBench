@@ -6,6 +6,8 @@ import uuid
 import argparse
 import psutil
 import time
+import shutil
+import tempfile
 import typing as T
 from typing import Optional, Union, List, Tuple, Dict
 from pathlib import Path
@@ -63,49 +65,52 @@ def pdbTM(
     Returns:
     `top_pdbTM`: The highest pdbTM value among the top three targets hit by Foldseek.
     """
-    # Handling multiprocessing
-    base_tmp_path = "./tmp/"
-    tmp_path = os.path.join(base_tmp_path, f'process_{process_id}_{uuid.uuid4().hex[:8]}')
-    os.makedirs(tmp_path, exist_ok=True)
-    
-    #pdb100 = "~/zzq/foldseek/database/pdb100/pdb"
-    # Check whether input is a directory or a single file
-    if ".pdb" in input:
-        output_file = f'./{os.path.basename(input)}.m8'
-        
-        cmd = f'foldseek easy-search \
-                {input} \
-                {foldseek_database_path} \
-                {output_file} \
-                {tmp_path} \
-                --format-mode 4 \
-                --format-output query,target,evalue,alntmscore,rmsd,prob \
-                --alignment-type 1 \
-                --num-iterations 2 \
-                -e inf \
-                -v 0'
-                
-        if foldseek_path is not None:
-            cmd.replace('foldseek', {foldseek_path})
-
-        _ = subprocess.run(cmd, shell=True, check=True, stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
-    
-        result = pd.read_csv(output_file, sep='\t')
-        top_pdbTM = round(result['alntmscore'].head(1).max(), 3)
-        
-        if save_tmp == False:
-            os.remove(output_file)
-            
-    else:
+    input_path = str(input)
+    if ".pdb" not in input_path:
         return None
-            
-    return top_pdbTM
+
+    # Use system temp dir to avoid permission issues under repo-local ./tmp.
+    tmp_path = tempfile.mkdtemp(prefix=f"process_{process_id}_")
+    output_file = os.path.join(
+        tmp_path,
+        f"{os.path.basename(input_path)}.{uuid.uuid4().hex[:8]}.m8",
+    )
+    foldseek_bin = str(foldseek_path) if foldseek_path is not None else "foldseek"
+
+    cmd = (
+        f"{foldseek_bin} easy-search "
+        f"{input_path} "
+        f"{foldseek_database_path} "
+        f"{output_file} "
+        f"{tmp_path} "
+        f"--format-mode 4 "
+        f"--format-output query,target,evalue,alntmscore,rmsd,prob "
+        f"--alignment-type 1 "
+        f"--num-iterations 2 "
+        f"-e inf -v 0"
+    )
+
+    try:
+        _ = subprocess.run(
+            cmd,
+            shell=True,
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        result = pd.read_csv(output_file, sep="\t")
+        top_pdbTM = round(result["alntmscore"].head(1).max(), 3)
+        return top_pdbTM
+    finally:
+        if not save_tmp:
+            shutil.rmtree(tmp_path, ignore_errors=True)
 
 def calculate_novelty(
     input_csv: Union[str, Path, pd.DataFrame],
     foldseek_database_path: Union[str, Path],
     max_workers: int,
-    cpu_threshold: float 
+    cpu_threshold: float,
+    foldseek_path: Optional[Union[Path, str]] = None,
 ) -> pd.DataFrame:
     df = pd.read_csv(input_csv).copy() if isinstance(input_csv, str) or isinstance(input_csv, Path) else input_csv.copy()
     if 'pdbTM' not in df.columns:
@@ -119,7 +124,9 @@ def calculate_novelty(
                 if pd.isna(df[df['backbone_path'] == backbone_path]['pdbTM'].iloc[0]):
                     while psutil.cpu_percent(interval=1) > cpu_threshold:
                         time.sleep(0.5)
-                    future = executor.submit(pdbTM, backbone_path, foldseek_database_path, process_id)
+                    future = executor.submit(
+                        pdbTM, backbone_path, foldseek_database_path, process_id, False, foldseek_path
+                    )
                     futures[future] = backbone_path
                     process_id += 1
                     
@@ -131,8 +138,9 @@ def calculate_novelty(
             #df['pdbTM'] = df['backbone_path'].apply(lambda x: pdbTM_values[x])
     else:
         for process_id_placeholder, backbone_path in enumerate(df['backbone_path'].unique()):
-            pdbTM_value = pdbTM(backbone_path, foldseek_database_path,
-                    process_id_placeholder)
+            pdbTM_value = pdbTM(
+                backbone_path, foldseek_database_path, process_id_placeholder, False, foldseek_path
+            )
             df.loc[df['backbone_path'] == backbone_path, 'pdbTM'] = pdbTM_value
             
     return df

@@ -55,7 +55,7 @@ def parse_esm_summary(esm_summary_path: Path) -> dict:
     return result if result else None
 
 
-def generate_summary_by_problem(base_output_dir: Path) -> Path:
+def generate_summary_by_problem(base_output_dir: Path, output_path: Optional[Path] = None) -> Path:
     """
     Generate summary_by_problem.csv from all esm_summary.txt files.
     
@@ -65,7 +65,7 @@ def generate_summary_by_problem(base_output_dir: Path) -> Path:
     Returns:
         Path to generated summary_by_problem.csv
     """
-    summary_by_problem_path = base_output_dir / "summary_by_problem.csv"
+    summary_by_problem_path = output_path if output_path is not None else (base_output_dir / "summary_by_problem.csv")
     
     # Find all esm_summary.txt files
     # Try motif_scaffolding/*/esm_summary.txt first (ODesignBench structure)
@@ -234,7 +234,7 @@ def main():
     
     # Generate summary_by_problem.csv
     summary_by_problem_path = Path(args.summary_by_problem) if args.summary_by_problem else base_output_dir / "summary_by_problem.csv"
-    generate_summary_by_problem(base_output_dir)
+    generate_summary_by_problem(base_output_dir, output_path=summary_by_problem_path)
     
     # Generate overall_summary.csv
     test_cases_path = Path(args.test_cases) if args.test_cases else None

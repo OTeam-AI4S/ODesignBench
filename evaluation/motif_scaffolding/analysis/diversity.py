@@ -6,6 +6,7 @@ import subprocess
 import random
 import shutil
 import logging
+import tempfile
 import typing as T
 from typing import Optional, Union, List, Tuple, Dict
 from pathlib import Path
@@ -39,12 +40,12 @@ def foldseek_cluster(
 
     if not os.listdir(input):
         return {"Clusters": 0, "Samples": 0, "Diversity": 0} if output_mode == 'DICT' else 0
-    tmp_path = os.path.join(input, 'tmp')
-    os.makedirs(tmp_path, exist_ok=True)
+    tmp_path = tempfile.mkdtemp(prefix='foldseek_cluster_')
 
     output_prefix = os.path.join(input, 'diversity')
+    foldseek_bin = str(foldseek_path) if foldseek_path is not None else os.environ.get("FOLDSEEK_BIN", "foldseek")
 
-    cmd = f'foldseek easy-cluster \
+    cmd = f'{foldseek_bin} easy-cluster \
             {input} \
             {output_prefix} \
             {tmp_path} \
@@ -53,9 +54,6 @@ def foldseek_cluster(
             --alignment-mode 2 \
             -v 0'
 
-    if foldseek_path is not None:
-        cmd.replace('foldseek', str(foldseek_path))
-
     assist_num = 0
     try:
         subprocess.run(cmd, shell=True, check=True)
@@ -63,11 +61,14 @@ def foldseek_cluster(
         for failed_tmp_file in os.listdir(tmp_path):
             abs_path = os.path.join(tmp_path, failed_tmp_file)
             if os.path.islink(abs_path):
-                target_path = os.readlink(abs_path)
                 os.unlink(abs_path)
-                pass
+            elif os.path.isdir(abs_path):
+                shutil.rmtree(abs_path, ignore_errors=True)
             else:
-                shutil.rmtree(abs_path)
+                try:
+                    os.remove(abs_path)
+                except OSError:
+                    pass
 
         shutil.copy(assist_protein_path, os.path.join(input, 'assist_protein.pdb'))
         log.info(f'Foldseek-clusters encountered an error. \
@@ -89,7 +90,7 @@ def foldseek_cluster(
     # Remove assistant protein
     if os.path.exists(os.path.join(input, 'assist_protein.pdb')):
         os.remove(os.path.join(input, 'assist_protein.pdb'))
-    shutil.rmtree(tmp_path)
+    shutil.rmtree(tmp_path, ignore_errors=True)
 
     if output_mode == 'FLOAT':
         return diversity

@@ -187,6 +187,10 @@ class MotifScaffoldingEvaluation:
             possible_test_cases_paths = [
                 Path(__file__).parent.parent.parent / "Motif_Benchmark" / "MotifBench" / "test_cases.csv",
                 Path(__file__).parent / "resources" / "test_cases.csv",
+                # Common local sibling checkout layout
+                Path(__file__).resolve().parents[4] / "MotifBench" / "test_cases.csv",
+                # If ODesignBench is under .../hzh/ODesignBench, probe .../hzh/MotifBench
+                Path(__file__).resolve().parents[5] / "MotifBench" / "test_cases.csv",
             ]
             for path in possible_test_cases_paths:
                 if path.exists():
