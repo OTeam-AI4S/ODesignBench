@@ -691,9 +691,16 @@ def _run_refold_chai1(ctx: PipelineContext) -> None:
 
 
 def _pbl_prepare_evaluation_inputs(ctx: PipelineContext) -> None:
+    # PBL inputs may already be inverse-folded CIFs. Prefer the freshly
+    # preprocessed structures and fall back to the legacy inversefold dir.
+    input_dir = ctx.pipeline_dir / "formatted_designs"
+    legacy_input_dir = ctx.pipeline_dir / "inversefold"
+    if not input_dir.exists() and legacy_input_dir.exists():
+        input_dir = legacy_input_dir
+
     ctx.runtime["refold_prepare"] = ctx.preprocess_model.run(
         action="format_output_ligand_for_pbl_eval",
-        input_dir=str(ctx.pipeline_dir / "inversefold"),
+        input_dir=str(input_dir),
         output_dir=str(ctx.pipeline_dir / "inversefold_formatted_designs_for_evaluation"),
     )
 
@@ -1062,7 +1069,7 @@ TASK_SPECS: dict[str, TaskSpec] = {
     ),
     "pbl": TaskSpec(
         preprocess_stage=_preprocess_ligand,
-        inversefold_stage=_inversefold_odesign_to_inversefold,
+        inversefold_stage=None,
         refold_prepare_stage=_pbl_prepare_evaluation_inputs,
         refold_stage=None,
         evaluation_plugins=[_plugin_pbl_eval],

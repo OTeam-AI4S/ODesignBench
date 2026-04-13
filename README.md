@@ -37,7 +37,20 @@ conda activate designbench
 
 - `fair-esm==2.0.0` is used and is compatible with modern Python 3.10 and PyTorch 2.x.
 - `openbabel` is included in `environment.yml` for ligand reconstruction/docking metrics (`mol_rec`, `rdkit_utils`, `docking_vina`).
+- `environment.yml` also includes the extra ligand-evaluation stack used by `run_pbl_pipeline.py`, including `EFGs`, `meeko==0.1.dev3`, `pdb2pqr`, `vina`, and `AutoDockTools_py3`.
 - If your system has multiple CUDA installations, verify runtime visibility with `nvidia-smi` and `python -c "import torch; print(torch.cuda.is_available())"`.
+
+### Verifying Ligand Docking Dependencies
+
+After environment creation, it is helpful to verify the docking stack before launching a large PBL run:
+
+```bash
+conda activate designbench
+python -c "import AutoDockTools, vina, meeko, easydict, EFGs; print('PBL docking dependencies are available')"
+pdb2pqr30 --help
+```
+
+If your environment was created before these dependencies were added to `environment.yml`, recreate the environment or install the missing packages into the existing `designbench` environment.
 
 ## Inversefold Model Parameters (ProteinMPNN / LigandMPNN)
 
@@ -283,6 +296,54 @@ CD3d_0,B,A
 CD3d_1,B,A
 ```
 
+### Protein Binding Ligand (PBL)
+
+PBL evaluates ligand-containing protein structures and reports geometry, chemistry, and optional Vina docking metrics.
+
+- Input: `.cif` files in `design_dir`
+- Accepted layout: either `design_dir/*.cif` or nested case folders such as `design_dir/2vt4/*.cif`
+- Evaluation: automatic ligand extraction, pocket extraction, ligand geometry metrics, chemistry metrics, and Vina docking metrics
+
+If your input CIF files are already inverse-fold outputs, the current PBL pipeline skips the inverse-fold stage and evaluates them directly after preprocessing.
+
+Minimal run command:
+
+```bash
+python scripts/run_pbl_pipeline.py \
+  design_dir=/path/to/protein_binding_ligand_designs \
+  gpus=0
+```
+
+Optional: set `root=/path/to/output_dir` to change output location (default: `results`).
+
+Recommended example layout:
+
+```text
+examples/protein_binding_ligand/
+`-- 2vt4/
+    `-- 2vt4-1_seed_42_bb_0_seq_0.cif
+```
+
+Example run:
+
+```bash
+python scripts/run_pbl_pipeline.py \
+  design_dir=examples/protein_binding_ligand \
+  gpus=0 \
+  root=results/examples/protein_binding_ligand
+```
+
+Successful runs will write:
+
+- preprocessed CIFs to `formatted_designs/`
+- evaluation inputs to `inversefold_formatted_designs_for_evaluation/`
+- ligand metrics to `inversefold_formatted_designs_for_evaluation_metrics/`
+
+The final CSV and summary JSON are:
+
+- `inversefold_formatted_designs_for_evaluation_metrics/evaluation_results.csv`
+- `inversefold_formatted_designs_for_evaluation_metrics/evaluation_summary_metrics.json`
+
 ### MotifBench (Motif Scaffolding)
 
 MotifBench evaluates whether generated scaffolds preserve motif geometry while remaining structurally plausible and diverse.
@@ -371,7 +432,7 @@ sample_num,motif_placements
 
 ## Examples
 
-We provide ready-to-use examples for all three modules in the `examples/` directory. You can run them directly to verify your installation and understand the pipeline workflow.
+We provide ready-to-use examples for the main benchmark modules in the `examples/` directory. You can run them directly to verify your installation and understand the pipeline workflow.
 
 ### 1. Motif Scaffolding
 
@@ -389,6 +450,12 @@ python3 scripts/run_pbp_pipeline.py design_dir=examples/protein_binding_protein/
 
 ```bash
 python3 scripts/run_ame_pipeline.py design_dir=examples/tip_atom_scaffolding/ gpus=0 root=results/examples/tip_atom_scaffolding
+```
+
+### 4. Protein Binding Ligand (PBL)
+
+```bash
+python3 scripts/run_pbl_pipeline.py design_dir=examples/protein_binding_ligand/ gpus=0 root=results/examples/protein_binding_ligand
 ```
 
 ## Repository Layout

@@ -1,4 +1,5 @@
 import os
+import sys
 import tqdm
 import pickle
 import operator
@@ -403,16 +404,40 @@ class Evaluation():
             dict: Result dictionary containing success status and output information
         """
         try:
-            
-            os.environ['BABEL_LIBDIR'] = self.config.metrics.babel_libdir
-            os.environ['CUDA_VISIBLE_DEVICES'] = cuda_device
+            env = os.environ.copy()
+            env['CUDA_VISIBLE_DEVICES'] = cuda_device
+
+            executable_path = Path(sys.executable).resolve()
+            env_prefix = executable_path.parent.parent
+            env_bin = str(env_prefix / "bin")
+            env_lib = str(env_prefix / "lib")
+            babel_libdir = str(getattr(self.config.metrics, "babel_libdir", "") or "").strip()
+            if not babel_libdir:
+                autodetect_babel_libdir = env_prefix / "lib" / "openbabel" / "3.1.0"
+                if autodetect_babel_libdir.exists():
+                    babel_libdir = str(autodetect_babel_libdir)
+            if babel_libdir:
+                env["BABEL_LIBDIR"] = babel_libdir
+
+            babel_datadir = env_prefix / "share" / "openbabel" / "3.1.0"
+            if babel_datadir.exists():
+                env["BABEL_DATADIR"] = str(babel_datadir)
+
+            env["PATH"] = (
+                f"{env_bin}:{env['PATH']}" if env.get("PATH") else env_bin
+            )
+            env["LD_LIBRARY_PATH"] = (
+                f"{env_lib}:{env['LD_LIBRARY_PATH']}"
+                if env.get("LD_LIBRARY_PATH")
+                else env_lib
+            )
 
             
             # Construct the command
             script_path = os.path.join(os.path.dirname(__file__), "ligand_evaluation.py")
             
             cmd = [
-                'python', script_path,
+                sys.executable, script_path,
                 '--input_dir', input_dir,
                 '--output_dir', output_dir,
                 '--dist_cutoff', str(dist_cutoff),
@@ -458,7 +483,7 @@ class Evaluation():
             
             result = subprocess.run(
                 cmd,
-                # env=env,
+                env=env,
                 capture_output=True,
                 text=True,
                 # cwd=current_dir

@@ -36,7 +36,6 @@ from metrics.ligand.geometry import eval_torsion_angle, eval_bond_length, eval_s
 from metrics.ligand.geometry.eval_bond_length_config import set_ccd_bond_length_path
 from metrics.ligand.geometry.eval_bond_angle_config import set_ccd_bond_angle_path
 from metrics.ligand.geometry.eval_torsion_angle_config import set_ccd_torsion_angle_path
-from metrics.ligand.docking_vina import VinaDockingTask
 from metrics.ligand import scoring
 from metrics.ligand.datasets.parsers import process_single_cif
 
@@ -179,22 +178,28 @@ def evaluate_chemistry(ligand_file, pocket_file, output_dir, center=None, exhaus
         
         # Docking evaluation (optional based on enable_vina flag)
         if enable_vina:
-            dock_save_dir = os.path.join(output_dir, 'docking_results')
-            os.makedirs(dock_save_dir, exist_ok=True)
-            
-            vina_task = VinaDockingTask.from_generated_mol(
-                mol, ligand_file, protein_path=pocket_file, center=center)
-            
-            score_only_results = vina_task.run(mode='score_only', exhaustiveness=exhaustiveness, save_dir=dock_save_dir)
-            minimize_results = vina_task.run(mode='minimize', exhaustiveness=exhaustiveness, save_dir=dock_save_dir)
-            docking_results = vina_task.run(mode='dock', exhaustiveness=exhaustiveness,save_dir=dock_save_dir)
-            
-            vina_results = {
-                'score_only': score_only_results,
-                'minimize': minimize_results,
-                'dock': docking_results
-            }
-            result['vina'] = vina_results
+            try:
+                from metrics.ligand.docking_vina import VinaDockingTask
+
+                dock_save_dir = os.path.join(output_dir, 'docking_results')
+                os.makedirs(dock_save_dir, exist_ok=True)
+                
+                vina_task = VinaDockingTask.from_generated_mol(
+                    mol, ligand_file, protein_path=pocket_file, center=center)
+                
+                score_only_results = vina_task.run(mode='score_only', exhaustiveness=exhaustiveness, save_dir=dock_save_dir)
+                minimize_results = vina_task.run(mode='minimize', exhaustiveness=exhaustiveness, save_dir=dock_save_dir)
+                docking_results = vina_task.run(mode='dock', exhaustiveness=exhaustiveness,save_dir=dock_save_dir)
+                
+                vina_results = {
+                    'score_only': score_only_results,
+                    'minimize': minimize_results,
+                    'dock': docking_results
+                }
+                result['vina'] = vina_results
+            except ModuleNotFoundError as e:
+                logger.warning(f"Vina dependencies unavailable, skipping docking for {ligand_file}: {e}")
+                result['vina'] = None
         else:
             result['vina'] = None
         

@@ -26,6 +26,15 @@ dependencies:
   - openbabel>=3.1.1
   - biopython>=1.83
   - prody
+  - lxml
+  - easydict
+  - tensorboard
+  - pyyaml
+  - lmdb
+  - swig
+  - boost-cpp
+  - sphinx
+  - sphinx_rtd_theme
 
   # Application-level libraries and models
   - pip
@@ -83,3 +92,10 @@ dependencies:
       - sympy
       - typing_extensions
       - dm-tree
+
+      # Protein-binding-ligand evaluation and docking extras
+      - EFGs
+      - meeko==0.1.dev3
+      - pdb2pqr
+      - vina
+      - git+https://github.com/Valdes-Tresanco-MS/AutoDockTools_py3
