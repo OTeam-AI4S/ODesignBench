@@ -133,6 +133,15 @@ def _get_cfg_value(cfg: object, key: str, default: object = None) -> object:
     return getattr(cfg, key, default)
 
 
+def _get_interface_pocket_cutoff(ctx: PipelineContext) -> float:
+    interface_cfg = _get_cfg_value(ctx.cfg, "interface", {}) or {}
+    if hasattr(interface_cfg, "get"):
+        cutoff = interface_cfg.get("pocket_cutoff", 3.5)
+    else:
+        cutoff = getattr(interface_cfg, "pocket_cutoff", 3.5)
+    return float(cutoff)
+
+
 def _infer_motif_name_from_pdbs(pdb_paths: list[Path], fallback_name: str) -> str:
     """
     Infer motif identifier from sample PDB names.
@@ -251,11 +260,30 @@ def _plugin_pbp_eval(ctx: PipelineContext) -> None:
 
 
 def _plugin_lbp_eval(ctx: PipelineContext) -> None:
+    lbp_info_csv = _get_or_resolve_lbp_info_csv(ctx)
     ctx.runtime["evaluation_lbp"] = ctx.evaluation_model.run(
         task="lbp",
         pipeline_dir=str(ctx.pipeline_dir),
         cands=str(ctx.pipeline_dir / "refold" / "chai1_out" / "chai1_cands.pkl"),
         output_csv=str(ctx.pipeline_dir / "raw_data.csv"),
+        lbp_info_csv=lbp_info_csv,
+    )
+
+
+def _plugin_interface_eval(ctx: PipelineContext) -> None:
+    kwargs = {
+        "pipeline_dir": str(ctx.pipeline_dir),
+        "cands": str(ctx.pipeline_dir / "refold" / "chai1_out" / "chai1_cands.pkl"),
+        "output_csv": str(ctx.pipeline_dir / "raw_data.csv"),
+        "pocket_cutoff": _get_interface_pocket_cutoff(ctx),
+    }
+    interface_info_csv = ctx.runtime.get("interface_info_csv", None)
+    if interface_info_csv:
+        kwargs["interface_info_csv"] = interface_info_csv
+    kwargs["lbp_info_csv"] = _get_or_resolve_lbp_info_csv(ctx)
+    ctx.runtime["evaluation_interface"] = ctx.evaluation_model.run(
+        task="interface",
+        **kwargs,
     )
 
 
@@ -311,6 +339,24 @@ def _get_or_resolve_ame_csv(ctx: PipelineContext) -> str:
     return ame_csv_path
 
 
+def _get_or_resolve_lbp_info_csv(ctx: PipelineContext) -> str:
+    if "lbp_info_csv" in ctx.runtime:
+        return ctx.runtime["lbp_info_csv"]
+
+    lbp_info_csv = _resolve_metadata_csv(
+        ctx,
+        cfg_key="lbp_info_csv",
+        preferred_names=["lbp_info.csv"],
+        csv_label="LBP info CSV",
+    )
+    ctx.runtime["lbp_info_csv"] = lbp_info_csv
+
+    from inversefold.lbp_csv_utils import load_lbp_info_csv
+
+    ctx.runtime["lbp_info_df"] = load_lbp_info_csv(lbp_info_csv)
+    return lbp_info_csv
+
+
 def _plugin_ame_eval(ctx: PipelineContext) -> None:
     chai1_cands = ctx.pipeline_dir / "refold" / "chai1_out" / "chai1_cands.pkl"
     if not chai1_cands.exists():
@@ -361,6 +407,47 @@ def _preprocess_ligand(ctx: PipelineContext) -> None:
         input_dir=ctx.design_dir,
         output_dir=str(ctx.pipeline_dir / "formatted_designs"),
     )
+
+
+def _preprocess_interface(ctx: PipelineContext) -> None:
+    _preprocess_ligand(ctx)
+
+    from inversefold.interface_utils import build_interface_info_csv
+
+    formatted_dir = ctx.pipeline_dir / "formatted_designs"
+    pocket_cutoff = _get_interface_pocket_cutoff(ctx)
+    struct_paths = sorted(formatted_dir.glob("*.cif")) + sorted(formatted_dir.glob("*.pdb"))
+    if not struct_paths:
+        raise FileNotFoundError(f"No formatted interface structures found under {formatted_dir}")
+
+    lbp_info_csv = _get_or_resolve_lbp_info_csv(ctx)
+    lbp_info_df = ctx.runtime["lbp_info_df"]
+    from inversefold.lbp_csv_utils import match_pdb_to_lbp_info
+
+    design_chain_map = {}
+    for struct_path in struct_paths:
+        info = match_pdb_to_lbp_info(struct_path, lbp_info_df)
+        if info is None:
+            raise ValueError(
+                f"No LBP info row found for '{struct_path.name}'. "
+                "Ensure design_name in lbp_info.csv matches each formatted design filename."
+            )
+        design_chain_map[struct_path.stem] = info["design_chain"]
+
+    interface_info_csv = build_interface_info_csv(
+        formatted_dir,
+        ctx.pipeline_dir / "interface_info.csv",
+        pocket_cutoff=pocket_cutoff,
+        design_chain_map=design_chain_map,
+    )
+    ctx.runtime["interface_info_csv"] = str(interface_info_csv)
+
+    preprocess_result = ctx.runtime.get("preprocess", {})
+    details = preprocess_result.setdefault("details", {})
+    details["interface_pocket_cutoff"] = pocket_cutoff
+    details["interface_design_count"] = len(struct_paths)
+    details["interface_info_csv"] = str(interface_info_csv)
+    details["lbp_info_csv"] = str(lbp_info_csv)
 
 
 def _preprocess_cif(ctx: PipelineContext) -> None:
@@ -452,6 +539,69 @@ def _inversefold_ligandmpnn(ctx: PipelineContext) -> None:
         output_dir=str(ctx.pipeline_dir / "inverse_fold"),
         gpu_list=ctx.gpu_list,
         origin_cwd=ctx.origin_cwd,
+    )
+
+
+def _inversefold_lbp(ctx: PipelineContext) -> None:
+    _get_or_resolve_lbp_info_csv(ctx)
+    lbp_info_df = ctx.runtime["lbp_info_df"]
+
+    from inversefold.lbp_csv_utils import (
+        calculate_fixed_residues_from_chain_roles,
+        match_pdb_to_lbp_info,
+    )
+
+    def _fixed_residue_calculator(struct_path: Path, _row: Any) -> list[str]:
+        info = match_pdb_to_lbp_info(struct_path, lbp_info_df)
+        if info is None:
+            raise ValueError(
+                f"No LBP info row found for '{struct_path.name}'. "
+                "Ensure design_name in lbp_info.csv matches each formatted design filename."
+            )
+        return calculate_fixed_residues_from_chain_roles(
+            struct_path,
+            design_chain=info["design_chain"],
+            target_chain=info["target_chain"],
+        )
+
+    ctx.runtime["inversefold"] = _require_inversefold_model(ctx).run(
+        action="ligandmpnn_distributed",
+        input_dir=ctx.pipeline_dir / "formatted_designs",
+        output_dir=str(ctx.pipeline_dir / "inverse_fold"),
+        gpu_list=ctx.gpu_list,
+        origin_cwd=ctx.origin_cwd,
+        fixed_residues_calculator=_fixed_residue_calculator,
+    )
+
+
+def _inversefold_interface(ctx: PipelineContext) -> None:
+    from inversefold.interface_utils import calculate_fixed_residues_from_ligand_proximity
+    from inversefold.lbp_csv_utils import match_pdb_to_lbp_info
+
+    pocket_cutoff = _get_interface_pocket_cutoff(ctx)
+    _get_or_resolve_lbp_info_csv(ctx)
+    lbp_info_df = ctx.runtime["lbp_info_df"]
+
+    def _fixed_residue_calculator(struct_path: Path, _row: Any) -> list[str]:
+        info = match_pdb_to_lbp_info(struct_path, lbp_info_df)
+        if info is None:
+            raise ValueError(
+                f"No LBP info row found for '{struct_path.name}'. "
+                "Ensure design_name in lbp_info.csv matches each formatted design filename."
+            )
+        return calculate_fixed_residues_from_ligand_proximity(
+            struct_path,
+            pocket_cutoff=pocket_cutoff,
+            design_chain=info["design_chain"],
+        )
+
+    ctx.runtime["inversefold"] = _require_inversefold_model(ctx).run(
+        action="ligandmpnn_distributed",
+        input_dir=ctx.pipeline_dir / "formatted_designs",
+        output_dir=str(ctx.pipeline_dir / "inverse_fold"),
+        gpu_list=ctx.gpu_list,
+        origin_cwd=ctx.origin_cwd,
+        fixed_residues_calculator=_fixed_residue_calculator,
     )
 
 
@@ -1070,17 +1220,17 @@ TASK_SPECS: dict[str, TaskSpec] = {
     ),
     "lbp": TaskSpec(
         preprocess_stage=_preprocess_ligand,
-        inversefold_stage=_inversefold_ligandmpnn,
+        inversefold_stage=_inversefold_lbp,
         refold_prepare_stage=_prepare_refold_chai1,
         refold_stage=_run_refold_chai1,
         evaluation_plugins=[_plugin_lbp_eval],
     ),
     "interface": TaskSpec(
-        preprocess_stage=_preprocess_ligand,
-        inversefold_stage=_inversefold_ligandmpnn,
+        preprocess_stage=_preprocess_interface,
+        inversefold_stage=_inversefold_interface,
         refold_prepare_stage=_prepare_refold_chai1,
         refold_stage=_run_refold_chai1,
-        evaluation_plugins=[_plugin_lbp_eval],
+        evaluation_plugins=[_plugin_interface_eval],
     ),
     "nuc": TaskSpec(
         preprocess_stage=_preprocess_cif,

@@ -334,6 +334,7 @@ CD3d_1,B,A
 LBP evaluates ligand-binding protein designs, where the ligand is retained during inverse folding and the designed protein is refolded with Chai-1.
 
 - Input: ligand-containing design structures (`.cif` recommended)
+- Required metadata: `lbp_info.csv` in `design_dir`
 - Recommended layout: nested case folders such as `design_dir/FAD/FAD_seed_1_bb_0_seq_0.cif`
 - Inverse fold: LigandMPNN
 - Refold: Chai-1
@@ -361,10 +362,24 @@ python scripts/run_lbp_pipeline.py \
 
 Optional: set `root=/path/to/output_dir` to change output location (default: `results`).
 
+`lbp_info.csv` must provide one row per design with at least:
+
+- `design_name`
+- `target_chain`
+- `design_chain`
+
+Example:
+
+```csv
+design_name,target_chain,design_chain
+FAD_seed_1_bb_0_seq_0,A,B
+```
+
 Recommended example layout:
 
 ```text
 examples/ligand_binding_protein/
+|-- lbp_info.csv
 `-- FAD/
     `-- FAD_seed_1_bb_0_seq_0.cif
 ```
@@ -379,6 +394,29 @@ python3 scripts/run_lbp_pipeline.py \
 ```
 
 Successful runs will write the final evaluation table to `raw_data.csv`.
+
+### Interface Design
+
+Interface design is the pocket-constrained variant of ligand-binding protein design used in the ODesign paper. It reuses the same protein-ligand inputs as LBP, but only redesigns protein residues within `3.5A` of the ligand.
+
+- Input: ligand-containing design structures (`.cif` recommended)
+- Required metadata: `lbp_info.csv` in `design_dir`
+- Recommended layout: nested case folders such as `design_dir/FAD/FAD_seed_1_bb_0_seq_0.cif`
+- Pocket definition: protein residues within `3.5A` of any non-water ligand atom
+- Inverse fold: LigandMPNN with pocket-only redesign
+- Refold: Chai-1
+- Evaluation: `sc_rmsd`, `pocket_rmsd`, pocket `plddt`, plus `global_plddt`, `ipae`, `min_ipae`, `iptm`, `ptm_binder`
+
+The unified interface pipeline now has its own config:
+
+```bash
+python3 scripts/run_interface_pipeline.py \
+  design_dir=examples/ligand_binding_protein \
+  gpus=0 \
+  root=results/examples/interface_design
+```
+
+`interface` reads the same `lbp_info.csv` as `lbp` to determine the ligand `target_chain` and redesigned `design_chain`, then computes the pocket only on `design_chain`.
 
 ### Protein Binding Nucleic Acid (PBN)
 
@@ -412,21 +450,13 @@ examples/protein_binding_nuc/
 `-- prot_binding_rna_demo_seed_2_bb_0_seq_0.cif
 ```
 
-Current validated wrapper:
+Example run:
 
 ```bash
-cd /path/to/ODesignBench
-bash tmp/run_pbn.sh
-```
-
-Useful overrides:
-
-```bash
-cd /path/to/ODesignBench
-RUN_TAG=pbn_example \
-TEST_INPUT_CIF=examples/protein_binding_nuc/prot_binding_rna_demo_seed_2_bb_0_seq_0.cif \
-CHAIN_INFO_CSV=examples/protein_binding_nuc/pbn_info.csv \
-bash tmp/run_pbn.sh
+python3 scripts/run_pbn_pipeline.py \
+  design_dir=examples/protein_binding_nuc \
+  gpus=0 \
+  root=results/examples/protein_binding_nuc
 ```
 
 Successful runs will write:
@@ -606,32 +636,49 @@ wget https://files.wwpdb.org/pub/pdb/data/monomers/components.cif.gz
 gunzip -f components.cif.gz
 ```
 
-### 3. Atomic Motif Scaffolding / Enzyme Design (AME)
+Example metadata:
+
+```csv
+design_name,target_chain,design_chain
+FAD_seed_1_bb_0_seq_0,A,B
+```
+
+### 3. Interface Design
+
+```bash
+python3 scripts/run_interface_pipeline.py \
+  design_dir=examples/ligand_binding_protein \
+  gpus=0 \
+  root=results/examples/interface_design
+```
+
+This task uses the same `examples/ligand_binding_protein/lbp_info.csv` metadata file as LBP.
+
+### 4. Atomic Motif Scaffolding / Enzyme Design (AME)
 
 ```bash
 python3 scripts/run_ame_pipeline.py design_dir=examples/tip_atom_scaffolding/ gpus=0 root=results/examples/tip_atom_scaffolding
 ```
 
-### 4. Protein Binding Ligand (PBL)
+### 5. Protein Binding Ligand (PBL)
 
 ```bash
 python3 scripts/run_pbl_pipeline.py design_dir=examples/protein_binding_ligand/ gpus=0 root=results/examples/protein_binding_ligand
 ```
 
-### 5. Nucleic Acid (RNA example)
+### 6. Nucleic Acid (RNA example)
 
 ```bash
 python3 scripts/run_nuc_pipeline.py design_dir=examples/nuc/rna/ refold.run_data_pipeline=true gpus=0 root=results/examples/nuc
 ```
 
-### 6. Protein Binding Nucleic Acid (PBN)
+### 7. Protein Binding Nucleic Acid (PBN)
 
 ```bash
-cd /path/to/ODesignBench
-RUN_TAG=pbn_example \
-TEST_INPUT_CIF=examples/protein_binding_nuc/prot_binding_rna_demo_seed_2_bb_0_seq_0.cif \
-CHAIN_INFO_CSV=examples/protein_binding_nuc/pbn_info.csv \
-bash tmp/run_pbn.sh
+python3 scripts/run_pbn_pipeline.py \
+  design_dir=examples/protein_binding_nuc \
+  gpus=0 \
+  root=results/examples/protein_binding_nuc
 ```
 
 ## Repository Layout

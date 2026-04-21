@@ -365,6 +365,16 @@ class InverseFold:
                 else:
                     print(f"Warning: No AME CSV info found for {struct_path.name}, using b_factor method")
             
+            if fixed_residues_calculator is not None and not use_cdr_fix:
+                try:
+                    fixed_residues = fixed_residues_calculator(struct_path, None)
+                    fixed_residues_str = " ".join(fixed_residues)
+                    ligandmpnn_multi_input[pdb_key] = fixed_residues_str
+                    continue
+                except Exception as e:
+                    print(f"Warning: Failed custom fixed-residue calculation for {struct_path.name}: {e}")
+                    print("  Falling back to b_factor-based method")
+
             if use_cdr_fix and cdr_df is not None and fixed_residues_calculator is not None:
                 from .cdr_utils import match_pdb_to_cdr_info
                 cdr_row = match_pdb_to_cdr_info(struct_path, cdr_df)  # match on original path (cdr id from filename)
@@ -395,6 +405,8 @@ class InverseFold:
             print(f"Prepared fixed residues for {len(ligandmpnn_multi_input)} structures (PBP CSV-based)")
         elif ame_csv_df is not None:
             print(f"Prepared fixed residues for {len(ligandmpnn_multi_input)} structures (AME motif-based)")
+        elif fixed_residues_calculator is not None and not use_cdr_fix:
+            print(f"Prepared fixed residues for {len(ligandmpnn_multi_input)} structures (custom calculator)")
         elif use_cdr_fix and cdr_df is not None:
             print(f"Prepared fixed residues for {len(ligandmpnn_multi_input)} structures (CDR-based)")
         num_gpus = len(gpu_list)

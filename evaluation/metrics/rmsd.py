@@ -1,4 +1,5 @@
 import pickle
+import re
 import numpy as np
 import biotite.structure as struc
 from biotite.structure.io import pdbx, pdb
@@ -99,6 +100,85 @@ class RMSDCalculator():
         ref_coords = np.stack([ref_coord_map[key] for key in shared_keys], axis=0)
         pred_coords = np.stack([pred_coord_map[key] for key in shared_keys], axis=0)
         return ref_coords, pred_coords, shared_keys
+
+    @staticmethod
+    def _normalize_residue_keys(
+        residue_keys: Optional[Sequence[str]],
+    ) -> Optional[Set[str]]:
+        if residue_keys is None:
+            return None
+        normalized = {
+            str(key).strip()
+            for key in residue_keys
+            if str(key).strip() and str(key).strip().lower() != "nan"
+        }
+        return normalized or None
+
+    @staticmethod
+    def _backbone_atom_coord_map(
+        arr,
+        residue_keys: Optional[Sequence[str]] = None,
+        chain_ids: Optional[Sequence[str]] = None,
+    ) -> Dict[Tuple[str, int, str, str], np.ndarray]:
+        residue_set = RMSDCalculator._normalize_residue_keys(residue_keys)
+        chain_set = RMSDCalculator._normalize_chain_ids(chain_ids)
+        mask = np.isin(arr.atom_name, ["N", "CA", "C", "O"]) & (~arr.hetero)
+        if chain_set is not None:
+            mask &= np.isin(arr.chain_id, list(chain_set))
+
+        out: Dict[Tuple[str, int, str, str], np.ndarray] = {}
+        if np.sum(mask) == 0:
+            return out
+
+        annotation_categories = set(arr.get_annotation_categories())
+        has_ins_code = "ins_code" in annotation_categories
+        for idx in np.flatnonzero(mask):
+            residue_key = f"{str(arr.chain_id[idx])}{int(arr.res_id[idx])}"
+            if residue_set is not None and residue_key not in residue_set:
+                continue
+            ins_code = str(arr.ins_code[idx]).strip() if has_ins_code else ""
+            key = (
+                str(arr.chain_id[idx]),
+                int(arr.res_id[idx]),
+                ins_code,
+                str(arr.atom_name[idx]),
+            )
+            if key not in out:
+                out[key] = arr.coord[idx]
+        return out
+
+    @staticmethod
+    def _backbone_atom_coord_map_by_res_id(
+        arr,
+        residue_ids: Optional[Sequence[int]] = None,
+    ) -> Dict[Tuple[int, str], np.ndarray]:
+        residue_id_set = None
+        if residue_ids is not None:
+            residue_id_set = {int(x) for x in residue_ids}
+
+        mask = np.isin(arr.atom_name, ["N", "CA", "C", "O"]) & (~arr.hetero)
+        out: Dict[Tuple[int, str], np.ndarray] = {}
+        if np.sum(mask) == 0:
+            return out
+
+        for idx in np.flatnonzero(mask):
+            res_id = int(arr.res_id[idx])
+            if residue_id_set is not None and res_id not in residue_id_set:
+                continue
+            key = (res_id, str(arr.atom_name[idx]))
+            if key not in out:
+                out[key] = arr.coord[idx]
+        return out
+
+    @staticmethod
+    def _residue_ids_from_keys(residue_keys: Sequence[str]) -> List[int]:
+        residue_ids: List[int] = []
+        for key in residue_keys:
+            match = re.search(r"(-?\d+)$", str(key).strip())
+            if match is None:
+                continue
+            residue_ids.append(int(match.group(1)))
+        return sorted(set(residue_ids))
     
     @staticmethod
     def compute_C4_rmsd(pred: str, refold: str):
@@ -121,22 +201,87 @@ class RMSDCalculator():
     
     @staticmethod
     def compute_protein_backbone_rmsd(pred: str, refold: str):
-        # Placeholder for RMSD calculation logic
-        if pred.endswith('.cif'):
-            pred_structure = pdbx.get_structure(pdbx.CIFFile.read(pred), model=1)
-        else:
-            pred_structure = pdb.get_structure(pdb.PDBFile.read(pred), model=1)
-        
-        if refold.endswith('.cif'):
-            refold_structure = pdbx.get_structure(pdbx.CIFFile.read(refold), model=1)
-        else:
-            refold_structure = pdb.get_structure(pdb.PDBFile.read(refold), model=1)
-        
-        pred_bb_mask = (np.isin(pred_structure.atom_name, ["N", "CA", "C", "O"]) & (~pred_structure.hetero))
-        refold_bb_mask = (np.isin(refold_structure.atom_name, ["N", "CA", "C", "O"]) & (~refold_structure.hetero))
-        pred_coord_align, _ = struc.superimpose(refold_structure.coord[refold_bb_mask], pred_structure.coord[pred_bb_mask])
-        bb_rmsd = struc.rmsd(refold_structure.coord[refold_bb_mask], pred_coord_align)
-        return bb_rmsd
+        pred_structure = RMSDCalculator._load_structure(pred)
+        refold_structure = RMSDCalculator._load_structure(refold)
+
+        pred_map = RMSDCalculator._backbone_atom_coord_map(pred_structure)
+        ref_map = RMSDCalculator._backbone_atom_coord_map(refold_structure)
+        common = sorted(set(pred_map.keys()) & set(ref_map.keys()))
+        if len(common) >= 3:
+            pred_coords = np.stack([pred_map[k] for k in common], axis=0)
+            ref_coords = np.stack([ref_map[k] for k in common], axis=0)
+            pred_align, _ = struc.superimpose(ref_coords, pred_coords)
+            return float(struc.rmsd(ref_coords, pred_align))
+
+        pred_by_res = RMSDCalculator._backbone_atom_coord_map_by_res_id(pred_structure)
+        ref_by_res = RMSDCalculator._backbone_atom_coord_map_by_res_id(refold_structure)
+        common_by_res = sorted(set(pred_by_res.keys()) & set(ref_by_res.keys()))
+        if len(common_by_res) >= 3:
+            pred_coords = np.stack([pred_by_res[k] for k in common_by_res], axis=0)
+            ref_coords = np.stack([ref_by_res[k] for k in common_by_res], axis=0)
+            pred_align, _ = struc.superimpose(ref_coords, pred_coords)
+            return float(struc.rmsd(ref_coords, pred_align))
+
+        pred_mask = np.isin(pred_structure.atom_name, ["N", "CA", "C", "O"]) & (~pred_structure.hetero)
+        ref_mask = np.isin(refold_structure.atom_name, ["N", "CA", "C", "O"]) & (~refold_structure.hetero)
+        pred_coords = pred_structure.coord[pred_mask]
+        ref_coords = refold_structure.coord[ref_mask]
+        if len(pred_coords) != len(ref_coords) or len(pred_coords) < 3:
+            return float("nan")
+        pred_align, _ = struc.superimpose(ref_coords, pred_coords)
+        return float(struc.rmsd(ref_coords, pred_align))
+
+    @staticmethod
+    def compute_protein_backbone_rmsd_subset(
+        pred: str,
+        refold: str,
+        residue_keys: Sequence[str],
+    ):
+        """
+        Backbone RMSD on a subset of residues, aligned on the same subset.
+        """
+        residue_set = RMSDCalculator._normalize_residue_keys(residue_keys)
+        if not residue_set:
+            return float("nan")
+
+        pred_structure = RMSDCalculator._load_structure(pred)
+        refold_structure = RMSDCalculator._load_structure(refold)
+
+        pred_map = RMSDCalculator._backbone_atom_coord_map(
+            pred_structure,
+            residue_keys=list(residue_set),
+        )
+        ref_map = RMSDCalculator._backbone_atom_coord_map(
+            refold_structure,
+            residue_keys=list(residue_set),
+        )
+        common = sorted(set(pred_map.keys()) & set(ref_map.keys()))
+        if len(common) >= 3:
+            pred_coords = np.stack([pred_map[k] for k in common], axis=0)
+            ref_coords = np.stack([ref_map[k] for k in common], axis=0)
+            pred_align, _ = struc.superimpose(ref_coords, pred_coords)
+            return float(struc.rmsd(ref_coords, pred_align))
+
+        residue_ids = RMSDCalculator._residue_ids_from_keys(list(residue_set))
+        if not residue_ids:
+            return float("nan")
+
+        pred_by_res = RMSDCalculator._backbone_atom_coord_map_by_res_id(
+            pred_structure,
+            residue_ids=residue_ids,
+        )
+        ref_by_res = RMSDCalculator._backbone_atom_coord_map_by_res_id(
+            refold_structure,
+            residue_ids=residue_ids,
+        )
+        common_by_res = sorted(set(pred_by_res.keys()) & set(ref_by_res.keys()))
+        if len(common_by_res) < 3:
+            return float("nan")
+
+        pred_coords = np.stack([pred_by_res[k] for k in common_by_res], axis=0)
+        ref_coords = np.stack([ref_by_res[k] for k in common_by_res], axis=0)
+        pred_align, _ = struc.superimpose(ref_coords, pred_coords)
+        return float(struc.rmsd(ref_coords, pred_align))
     
     @staticmethod
     def compute_pocket_rmsd(pred: str, refold: str, trb: str):

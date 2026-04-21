@@ -19,7 +19,7 @@ from evaluation.metrics.foldseek import FoldSeek
 import json
 import glob
 import re
-from typing import Optional, Any
+from typing import Optional, Any, Sequence
 
 class Evaluation():
 
@@ -61,6 +61,7 @@ class Evaluation():
             "protein": self.run_protein_evaluation,
             "pbp": self.run_protein_binding_protein_evaluation,
             "lbp": self.run_ligand_binding_protein_evaluation,
+            "interface": self.run_interface_evaluation,
             "nuc": self.run_nuc_evaluation,
             "nbl": self.run_nuc_binding_ligand_evaluation,
             "pbn": self.run_protein_binding_nuc_evaluation,
@@ -1107,23 +1108,52 @@ class Evaluation():
         df.to_csv(output_csv, index=True)
         print(f"metrics computation completed and saved to {output_csv}.")
     
-    def run_ligand_binding_protein_evaluation(self, pipeline_dir: str, cands: str, output_csv: str):
+    def run_ligand_binding_protein_evaluation(
+        self,
+        pipeline_dir: str,
+        cands: str,
+        output_csv: str,
+        lbp_info_csv: Optional[str] = None,
+    ):
+        lbp_info_df = None
+        if lbp_info_csv is not None and os.path.exists(lbp_info_csv):
+            from inversefold.lbp_csv_utils import load_lbp_info_csv, match_pdb_to_lbp_info
+
+            lbp_info_df = load_lbp_info_csv(lbp_info_csv)
+        else:
+            match_pdb_to_lbp_info = None
         
         def process_metrics_worker(cand: Path):
+            refold_path = None
             try:
                 refold_paths = cand.cif_paths
                 result_data_all = defaultdict(dict)
                 refold_path = refold_paths[0]
                 sample_name = refold_path.parent.name
-                inverse_fold_path = os.path.join(pipeline_dir, "inverse_fold", "backbones", f"{sample_name}.pdb")
-                # trb_path = os.path.join(pipeline_dir, "formatted_designs", f"{sample_name.rsplit('-',1)[0]}.pkl")
-                plddt, ipae, min_ipae, iptm, ptm_binder = Confidence.gather_chai1_confidence(cand, inverse_fold_path)
+                inverse_fold_path = self._resolve_chai_backbone_path(pipeline_dir, sample_name)
+
+                design_chain = None
+                if lbp_info_df is not None and match_pdb_to_lbp_info is not None:
+                    matched_info = match_pdb_to_lbp_info(Path(inverse_fold_path), lbp_info_df)
+                    if matched_info is not None:
+                        design_chain = matched_info["design_chain"]
+
+                plddt, ipae, min_ipae, iptm, ptm_binder_fallback = Confidence.gather_chai1_confidence(
+                    cand,
+                    inverse_fold_path,
+                )
+                ptm_binder = self._compute_chai_design_chain_ptm(
+                    cand,
+                    inverse_fold_path,
+                    design_chain,
+                    fallback=ptm_binder_fallback,
+                )
                 
                 result_data_all[f"{sample_name}"] = {
                     'plddt': plddt,
                     'ipae': ipae,
                     'min_ipae': min_ipae,
-                    'iptm': iptm,
+                    'iptm': self._scalarize_metric(iptm),
                     'ptm_binder': ptm_binder,
                 }
                 return result_data_all
@@ -1154,6 +1184,152 @@ class Evaluation():
             output_csv=output_csv,
             subdir_suffix="ligand_binding_protein",
         )
+        df.to_csv(output_csv, index=True)
+        print(f"metrics computation completed and saved to {output_csv}.")
+
+    def run_interface_evaluation(
+        self,
+        pipeline_dir: str,
+        cands: str,
+        output_csv: str,
+        pocket_cutoff: float = 3.5,
+        interface_info_csv: Optional[str] = None,
+        lbp_info_csv: Optional[str] = None,
+    ):
+        from inversefold.interface_utils import (
+            calculate_pocket_residues_from_ligand_proximity,
+            load_interface_info_csv,
+            match_name_to_interface_info,
+        )
+        from inversefold.lbp_csv_utils import load_lbp_info_csv, match_pdb_to_lbp_info
+
+        interface_info = None
+        if interface_info_csv is not None and os.path.exists(interface_info_csv):
+            interface_info = load_interface_info_csv(interface_info_csv)
+
+        lbp_info_df = None
+        if lbp_info_csv is not None and os.path.exists(lbp_info_csv):
+            lbp_info_df = load_lbp_info_csv(lbp_info_csv)
+
+        def _mean_ca_plddt_for_residues(struct_path: str, residue_keys: Sequence[str]) -> float:
+            residue_keys = [str(x).strip() for x in residue_keys if str(x).strip()]
+            if not residue_keys:
+                return float("nan")
+
+            if struct_path.endswith(".cif"):
+                atom_array = pdbx.get_structure(
+                    pdbx.CIFFile.read(struct_path),
+                    model=1,
+                    extra_fields=["b_factor"],
+                )
+            else:
+                atom_array = pdb.get_structure(
+                    pdb.PDBFile.read(struct_path),
+                    model=1,
+                    extra_fields=["b_factor"],
+                )
+
+            residue_ids = np.char.add(
+                atom_array.chain_id.astype(str),
+                np.asarray(atom_array.res_id, dtype=str),
+            )
+            mask = (~atom_array.hetero) & (atom_array.atom_name == "CA") & np.isin(residue_ids, residue_keys)
+            if np.sum(mask) == 0:
+                return float("nan")
+
+            plddt = float(np.mean(atom_array.b_factor[mask]))
+            if plddt > 1.5:
+                plddt = plddt / 100.0
+            return plddt
+
+        def process_metrics_worker(cand: Path):
+            refold_path = None
+            try:
+                refold_paths = cand.cif_paths
+                refold_path = refold_paths[0]
+                sample_name = refold_path.parent.name
+                inverse_fold_path = self._resolve_chai_backbone_path(pipeline_dir, sample_name)
+
+                if interface_info is not None:
+                    matched_info = match_name_to_interface_info(sample_name, interface_info)
+                else:
+                    matched_info = None
+
+                design_chain = None
+                if matched_info is not None and matched_info.get("design_chain", None):
+                    design_chain = matched_info["design_chain"]
+                elif lbp_info_df is not None:
+                    lbp_match = match_pdb_to_lbp_info(Path(inverse_fold_path), lbp_info_df)
+                    if lbp_match is not None:
+                        design_chain = lbp_match["design_chain"]
+
+                if matched_info is not None:
+                    pocket_residues = matched_info["pocket_residues"]
+                else:
+                    pocket_residues = calculate_pocket_residues_from_ligand_proximity(
+                        inverse_fold_path,
+                        pocket_cutoff=pocket_cutoff,
+                        design_chain=design_chain,
+                    )
+
+                global_plddt, ipae, min_ipae, iptm, ptm_binder_fallback = Confidence.gather_chai1_confidence(
+                    cand,
+                    inverse_fold_path,
+                )
+                ptm_binder = self._compute_chai_design_chain_ptm(
+                    cand,
+                    inverse_fold_path,
+                    design_chain,
+                    fallback=ptm_binder_fallback,
+                )
+                pocket_plddt = _mean_ca_plddt_for_residues(str(refold_path), pocket_residues)
+                if np.isnan(pocket_plddt):
+                    pocket_plddt = global_plddt
+
+                result_data = {
+                    "sc_rmsd": RMSDCalculator.compute_protein_backbone_rmsd(
+                        pred=inverse_fold_path,
+                        refold=str(refold_path),
+                    ),
+                    "pocket_rmsd": RMSDCalculator.compute_protein_backbone_rmsd_subset(
+                        pred=inverse_fold_path,
+                        refold=str(refold_path),
+                        residue_keys=pocket_residues,
+                    ),
+                    "plddt": pocket_plddt,
+                    "global_plddt": global_plddt,
+                    "ipae": ipae,
+                    "min_ipae": min_ipae,
+                    "iptm": self._scalarize_metric(iptm),
+                    "ptm_binder": ptm_binder,
+                    "pocket_residue_count": len(pocket_residues),
+                }
+                return sample_name, result_data
+
+            except Exception as e:
+                refold_name = str(refold_path) if refold_path is not None else "<unknown>"
+                print(f"Warning: Error processing {refold_name}: {e}")
+                return None, None
+
+        raw_data = defaultdict(dict)
+        cands = pickle.load(open(cands, "rb"))
+        print(f"{len(cands)} files were found for interface evaluation.")
+        futures = []
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=self.config.metrics.num_workers) as executor:
+            for cand in cands:
+                future = executor.submit(process_metrics_worker, cand)
+                futures.append(future)
+            for future in tqdm.tqdm(
+                concurrent.futures.as_completed(futures),
+                total=len(cands),
+                desc="computing metrics",
+            ):
+                sample_name, result_data = future.result()
+                if sample_name is not None and result_data is not None:
+                    raw_data[sample_name] = result_data
+
+        df = pd.DataFrame.from_dict(raw_data, orient="index")
         df.to_csv(output_csv, index=True)
         print(f"metrics computation completed and saved to {output_csv}.")
     
@@ -1575,11 +1751,94 @@ class Evaluation():
             evaluator.motif_name = motif_name
 
         results = evaluator.run_evaluation(
-            input_dir=input_dir,
-            output_dir=output_dir,
-            metadata_file=metadata_file,
-            motif_name=motif_name,
-        )
+                input_dir=input_dir,
+                output_dir=output_dir,
+                metadata_file=metadata_file,
+                motif_name=motif_name,
+            )
         return results
+
+    @staticmethod
+    def _resolve_chai_backbone_path(pipeline_dir: str, sample_name: str) -> str:
+        candidates = []
+        normalized = Path(sample_name).stem
+        base_name = re.sub(r"-\d+$", "", normalized)
+        for name in [normalized, base_name]:
+            for parent in [
+                Path(pipeline_dir) / "inverse_fold" / "backbones",
+                Path(pipeline_dir) / "formatted_designs",
+            ]:
+                for suffix in [".pdb", ".cif"]:
+                    candidates.append(parent / f"{name}{suffix}")
+        for candidate in candidates:
+            if candidate.exists():
+                return str(candidate)
+        raise FileNotFoundError(
+            f"Could not resolve reference backbone for sample '{sample_name}'. "
+            f"Tried: {', '.join(str(p) for p in candidates)}"
+        )
+
+    @staticmethod
+    def _ordered_chain_ids_for_structure(struct_path: str) -> list[str]:
+        if struct_path.endswith(".cif"):
+            atom_array = pdbx.get_structure(
+                pdbx.CIFFile.read(struct_path),
+                model=1,
+                extra_fields=["b_factor"],
+            )
+        else:
+            atom_array = pdb.get_structure(
+                pdb.PDBFile.read(struct_path),
+                model=1,
+                extra_fields=["b_factor"],
+            )
+
+        chain_ids: list[str] = []
+        for chain_id in atom_array.chain_id.tolist():
+            chain_id = str(chain_id).strip()
+            if chain_id and chain_id not in chain_ids:
+                chain_ids.append(chain_id)
+        return chain_ids
+
+    @staticmethod
+    def _scalarize_metric(value):
+        if value is None:
+            return np.nan
+        try:
+            arr = np.asarray(value)
+            if arr.size == 0:
+                return np.nan
+            return float(arr.reshape(-1)[0])
+        except Exception:
+            try:
+                return float(value)
+            except Exception:
+                return value
+
+    @staticmethod
+    def _compute_chai_design_chain_ptm(
+        cand,
+        inverse_fold_path: str,
+        design_chain: Optional[str],
+        fallback: Any = np.nan,
+    ) -> float:
+        if not design_chain or not inverse_fold_path or not os.path.exists(inverse_fold_path):
+            return Evaluation._scalarize_metric(fallback)
+        try:
+            chain_ids = Evaluation._ordered_chain_ids_for_structure(inverse_fold_path)
+            design_chain = str(design_chain).strip()
+            if design_chain not in chain_ids:
+                return Evaluation._scalarize_metric(fallback)
+
+            per_chain_ptm = cand.ranking_data[0].ptm_scores.per_chain_ptm
+            idx = chain_ids.index(design_chain)
+            arr = np.asarray(per_chain_ptm)
+            if arr.ndim == 2:
+                return float(arr[0, idx])
+            if arr.ndim == 1:
+                return float(arr[idx])
+            return Evaluation._scalarize_metric(fallback)
+        except Exception:
+            return Evaluation._scalarize_metric(fallback)
 
     # Antibody developability and antibody-interface evaluation removed (not needed for this benchmark)
